@@ -3,7 +3,6 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 
-
 // packeges
 const createError = require('http-errors'),
           express = require('express'),
@@ -26,6 +25,8 @@ const createError = require('http-errors'),
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
+// error
+const ExpressError = require('./utils/ExpressError');
 // Models
 const User = require('./models/user');
 
