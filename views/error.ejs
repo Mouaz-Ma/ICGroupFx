@@ -128,8 +128,10 @@ body {
 				<h1>Oops!</h1>
 				<h2><%= error.status %> - Somthing went wrong - <%= message %></h2>
 			</div>
-            <!-- <pre><%= error.stack %></pre> -->
 			<a href="/">Go TO Homepage</a>
+            <% if (process.env.NODE_ENV !== "production") { %>
+                <pre><%= error.stack %></pre>
+                <% } %>
 		</div>
 	</div>
 
