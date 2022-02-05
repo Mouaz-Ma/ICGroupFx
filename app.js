@@ -20,6 +20,7 @@ const createError = require('http-errors'),
           ejsMate = require('ejs-mate'),
     mongoSanitize = require('express-mongo-sanitize'),
            logger = require('morgan');
+               io = require("socket.io")(http);
 
 // Routes
 const indexRouter = require('./routes/index');
@@ -151,10 +152,19 @@ app.use((req, res, next) => {
     next();
 })
 
-
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+  //  web sockets
+  io.on("connect", function(socket) {
+    console.log(`A user connected`);
+  });
 
 // catch 404 and forward to error handler
 app.all('*', (req, res, next) => {
