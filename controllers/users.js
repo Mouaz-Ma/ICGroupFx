@@ -5,19 +5,16 @@ module.exports.renderRegister = (req, res) => {
 }
 // you need to add facebook and google here
 module.exports.register = async (req, res, next) => {
-    try {
-        const { email, username, password } = req.body;
-        const user = new User({ email, username });
-        const registeredUser = await User.register(user, password);
-        req.login(registeredUser, err => {
-            if (err) return next(err);
-            req.flash('success', 'Welcome to ICGroup family');
-            res.send("done");
-        })
-    } catch (e) {
-        req.flash('error', e.message);
-        res.send('register');
-    }
+        Users=new User({email: req.body.email, username : req.body.username});
+        User.register(Users, req.body.password, function(err, user) {
+            if (err) {
+                console.log(err);
+              res.json({success:false, message:"Your account could not be saved. Error: ", err}) 
+            }else{
+                console.log(User)
+              res.json({success: true, message: "Your account has been saved"})
+            }
+          });
 }
 
 module.exports.renderLogin = (req, res) => {
