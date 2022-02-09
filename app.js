@@ -19,7 +19,8 @@ const createError = require('http-errors'),
          mongoose = require('mongoose'),
           ejsMate = require('ejs-mate'),
     mongoSanitize = require('express-mongo-sanitize'),
-           logger = require('morgan');
+           logger = require('morgan'),
+              jwt = require('jsonwebtoken'),
                io = require("socket.io")(http);
 
 // Routes
@@ -34,7 +35,7 @@ const User = require('./models/user');
 const MongoDBStore = require("connect-mongo");
 
 // dont forget to add process.env.DB_URL || 
-const dbUrl = 'mongodb://localhost:27017/icgroupfx';
+const dbUrl = process.env.DATABASE;
 
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,

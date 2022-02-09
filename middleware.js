@@ -1,8 +1,9 @@
-const { blogSchema, analysisSchema,reviewSchema } = require('./schemas.js');
+const { blogSchema, analysisSchema,reviewSchema } = require('./schema.js');
 const ExpressError = require('./utils/ExpressError');
 const Blog = require('./models/blog');
 const Analysis = require('./models/analysis');
 const Review = require('./models/review');
+const jwt = require('jsonwebtoken');
 
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
@@ -73,4 +74,31 @@ module.exports.isReviewAuthor = async (req, res, next) => {
         return res.redirect(`/blogs/${id}`);
     }
     next();
+}
+
+module.exports.verifyToken = async (req, res, next) => {
+    let token = req.headers['x-access-token'] || req.headers['authorization'];
+    let checkBearer = "Bearer "
+
+    if (token) {
+        if (token.startsWith(checkBearer)) {
+            token = token.slice(checkBearer.length, token.length);
+        }
+        jwt.verify(token, process.env.SECRETJWT, (err, decoded) => {
+            if (err) {
+                res.json({
+                    success: false,
+                    message: "Failed to authenticate"
+                })
+            } else {
+                req.decoded = decoded;
+                next()
+            }
+        })
+    } else {
+        res.json({
+            success: false,
+            message: "No token Provided"
+        })
+    }
 }

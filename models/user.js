@@ -23,5 +23,9 @@ const UserSchema = new Schema({
 }, opts);
 
 UserSchema.plugin(passportLocalMongoose);
+UserSchema.methods.comparePassword = function(password, next){
+    let user = this;
+    return bcrypt.compareSync(password, user.password);
+}
 
 module.exports = mongoose.model('User', UserSchema);
