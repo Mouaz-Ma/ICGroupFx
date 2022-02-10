@@ -1,35 +1,38 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const { isLoggedIn, isAuthor, validateAnalysis, verifyToken } = require('../middleware');
-const passport = require('passport');
-const user = require('../models/user');
-
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function(user, done) {
-  done(null, user);
-});
 
 // you need to add facebook and google here
 module.exports.register = async (req, res) => {
-  if (!req.body.email || !req.body.password){
-    res.json({success:false, message:"Your account could not be saved. Error: "}) 
+  if (!req.body.email || !req.body.password) {
+    res.json({
+      success: false,
+      message: "email or password missing"
+    })
   } else {
-    Users=new User({email: req.body.email, username : req.body.username});
-    await User.register(Users, req.body.password, function(err, user) {
-        if (err) {
-            console.log(err);
-          res.status(500).json({success:false, message:"Your account could not be saved. Error: ", err}) 
-        }else{
-          let token = jwt.sign(user.toJSON(), process.env.SECRETJWT, {
-            expiresIn: 604800 // 1 week
-          });
-          res.json({success: true, token: token ,message: "Your account has been saved"})
-        }
+    try {
+      let newUser = new User({
+        email: req.body.email,
+        username: req.body.username,
+        password: req.body.password
       });
-  }
+      await newUser.save();
+      let token = jwt.sign(newUser.toJSON(), process.env.SECRETJWT, {
+        expiresIn: 604800 // 1 week
+      });
+      res.json({
+        success: true,
+        token: token,
+        message: "Your account has been saved"
+      })
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Your account could not be saved. Error: ",
+        err
+      })
+    }
+}
 }
 
 // user profile or verify
@@ -50,63 +53,39 @@ module.exports.verify = async (req, res) => {
   }
 }
 
-module.exports.login = (req, res) => {
-  if (!req.body.email) {
-    res.json({
-      success: false,
-      message: "Email was not given"
-    })
-  } else {
-    if (!req.body.password) {
-      res.json({
-        success: false,
-        message: "Password was not given"
-      })
-    } else {
+module.exports.login = async (req, res) => {
       try {
-        const user = new User({
-          email: req.body.email,
-          password: req.body.password,
+        const foundUser = await User.findOne({
+          email: req.body.email
         });
-        req.login(user, function (err) {
-          if (err) {
-            console.log(err)
-            res.json({
-              success: false,
-              message: err
+        if (!foundUser || !req.body.password) {
+          res.json({
+            success: false,
+            message: "User not found!"
+          })
+        } else {
+          if (foundUser.comparePassword(req.body.password)) {
+            let token = jwt.sign(foundUser.toJSON(), process.env.SECRETJWT, {
+              expiresIn: 604800 // 1 week
             })
-          } else {
-            passport.authenticate("local")(req, res,  function() {
-                if (!user) {
-                  console.log("couldn't find it ")
-                  res.status(403).json({
-                    success: false,
-                    message: 'Authentication faild, User not found'
-                  })
-                } else {
-                  console.log("token error")
-                  const token = jwt.sign({
-                    userId: user._id,
-                    email: user.email
-                  }, SECRETJWT, {
-                    expiresIn: 604800
-                  })
-                  res.json({
-                    success: true,
-                    message: "Authentication successful",
-                    token: token
-                  });
-                }
+            res.json({
+              success: true,
+              message: "Authentication successful",
+              token: token
             });
+          } else {
+            res.status(403).json({
+              success: false,
+              message: 'Authentication faild, Email or password wrong'
+            })
           }
-        })
+        }
       } catch (err) {
         console.log(err);
         res.sendStatus(500);
       }
-    }
-  }
-}
+      }
+
 
 
 module.exports.logout = (req, res) => {
