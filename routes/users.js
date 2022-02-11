@@ -17,6 +17,9 @@ router.route('/login')
 router.route('/verify')
     .get(verifyToken ,users.verify)
 
+router.route('/updateUser')
+.put(verifyToken ,users.updateUser)
+
 router.get('/logout', users.logout)
 
 module.exports = router;

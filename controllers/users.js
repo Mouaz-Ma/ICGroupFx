@@ -12,8 +12,8 @@ module.exports.register = async (req, res) => {
   } else {
     try {
       let newUser = new User({
-        email: req.body.email,
         username: req.body.username,
+        email: req.body.email,
         password: req.body.password
       });
       await newUser.save();
@@ -54,37 +54,58 @@ module.exports.verify = async (req, res) => {
 }
 
 module.exports.login = async (req, res) => {
-      try {
-        const foundUser = await User.findOne({
-          email: req.body.email
+  try {
+    const foundUser = await User.findOne({
+      email: req.body.email
+    });
+    if (!foundUser || !req.body.password) {
+      res.json({
+        success: false,
+        message: "User not found!"
+      })
+    } else {
+      if (foundUser.comparePassword(req.body.password)) {
+        let token = jwt.sign(foundUser.toJSON(), process.env.SECRETJWT, {
+          expiresIn: 604800 // 1 week
+        })
+        res.json({
+          success: true,
+          message: "Authentication successful",
+          token: token
         });
-        if (!foundUser || !req.body.password) {
-          res.json({
-            success: false,
-            message: "User not found!"
-          })
-        } else {
-          if (foundUser.comparePassword(req.body.password)) {
-            let token = jwt.sign(foundUser.toJSON(), process.env.SECRETJWT, {
-              expiresIn: 604800 // 1 week
-            })
-            res.json({
-              success: true,
-              message: "Authentication successful",
-              token: token
-            });
-          } else {
-            res.status(403).json({
-              success: false,
-              message: 'Authentication faild, Email or password wrong'
-            })
-          }
-        }
-      } catch (err) {
-        console.log(err);
-        res.sendStatus(500);
+      } else {
+        res.status(403).json({
+          success: false,
+          message: 'Authentication faild, Email or password wrong'
+        })
       }
-      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
+// updating profile
+module.exports.updateUser = async (req, res) => {
+  try{
+    let foundUser = await User.findOne({ _id: req.decoded._id})
+
+    if(foundUser){
+      if (req.body.name) foundUser.name = req.body.name;
+      if (req.body.email) foundUser.email = req.body.email;
+      if (req.body.password) foundUser.password = req.body.password;
+
+      await foundUser.save();
+      res.json({
+        success: true,
+        message: "Successfully updated"
+      })
+    }
+  } catch (err){
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
 
 
 
