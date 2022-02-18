@@ -30,7 +30,8 @@ module.exports.register = async (req, res) => {
                   auth: {
                     user: process.env.MAILUSER,
                     pass: process.env.MAILPASS
-                  }
+                  },
+                  secure: true
                 });
                 let mailOptions = {
                   to: newUser.email,
