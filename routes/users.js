@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const catchAsync = require('../utils/catchAsync');
-const User = require('../models/user');
+// const User = require('../models/user');
 const users = require('../controllers/users');
 const { isLoggedIn, isAuthor, validateAnalysis, verifyToken } = require('../middleware');
 
@@ -13,13 +12,23 @@ router.route('/register')
 
 router.route('/login')
     .post(users.login)
-// profile or verify
-router.route('/verify')
-    .get(verifyToken ,users.verify)
+// profile
+router.route('/user')
+    .get(verifyToken ,users.user)
+
+// EmailVerifying
+router.route('/verify/:uniqueString')
+    .get(users.emailVerify)
+
+// password reset
+router.route('/requestReset').post(users.requestReset)
+router.route('/passReset/:token')
+    .get(users.passResetGet)
+    .post(users.passResetPost)
 
 router.route('/updateUser')
 .put(verifyToken ,users.updateUser)
 
-router.get('/logout', users.logout)
+router.post('/logout', users.logout)
 
 module.exports = router;

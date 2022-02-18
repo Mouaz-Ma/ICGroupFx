@@ -15,6 +15,9 @@ ImageSchema.virtual('thumbnail').get(function () {
 // const opts = { toJSON: { virtuals: true } };
 
 const UserSchema = new Schema({
+    uniqueString: {
+        type: String
+    },
     username: {
         type: String,
         required: true,
@@ -31,6 +34,9 @@ const UserSchema = new Schema({
         required: true
     },
     userType: String,
+    isVerified: {type: Boolean, default: false},
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
 });
 
 UserSchema.pre('save', function (next) {
