@@ -194,7 +194,6 @@ module.exports.requestReset = (req, res, next) => {
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
-        console.log('mail sent');
         res.json({
           success: true,
           message: 'An e-mail has been sent to ' + user.email + ' with further instructions.'
@@ -240,6 +239,27 @@ module.exports.passResetPost = (req, res) => {
             let token = jwt.sign(user.toJSON(), process.env.SECRETJWT, {
               expiresIn: 604800 // 1 week
             })
+            let smtpTransport = nodemailer.createTransport({
+              service: 'Gmail', 
+              auth: {
+                user: process.env.MAILUSER,
+                pass: process.env.MAILPASS
+              }
+            });
+            let mailOptions = {
+              to: user.email,
+              from: process.env.MAILUSER,
+              subject: 'Your password has been changed',
+              text: 'Hello,\n\n' +
+                'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+            };
+            smtpTransport.sendMail(mailOptions, function(err) {
+              if(err){
+                console.log(err);
+              } else {
+                console.log("second email sent");
+              }
+            });
             res.json({
               success: true,
               message: "Authentication successful",
@@ -250,29 +270,6 @@ module.exports.passResetPost = (req, res) => {
         }
           })
     },
-    function(user, done) {
-      var smtpTransport = nodemailer.createTransport({
-        service: 'Gmail', 
-        auth: {
-          user: process.env.MAILUSER,
-          pass: process.env.GMAILPW
-        }
-      });
-      var mailOptions = {
-        to: user.email,
-        from: process.env.MAILUSER,
-        subject: 'Your password has been changed',
-        text: 'Hello,\n\n' +
-          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
-      };
-      smtpTransport.sendMail(mailOptions, function(err) {
-        res.json({
-          success: true,
-          message: 'Success! Your password has been changed.',
-          token: token
-        });
-      });
-    }
   ], function(err) {
     res.json({
       success: false,
