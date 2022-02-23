@@ -15,6 +15,9 @@ ImageSchema.virtual('thumbnail').get(function () {
 // const opts = { toJSON: { virtuals: true } };
 
 const UserSchema = new Schema({
+    strategy: {
+        type: String
+    },
     uniqueString: {
         type: String
     },
@@ -30,8 +33,7 @@ const UserSchema = new Schema({
         unique: true
     },
     password: {
-        type: String,
-        required: true
+        type: String
     },
     userType: String,
     isVerified: {type: Boolean, default: false},
@@ -41,7 +43,7 @@ const UserSchema = new Schema({
 
 UserSchema.pre('save', function (next) {
     let user = this;
-    if (this.isModified('password') || this.isNew) {
+    if ((this.isModified('password') || this.isNew) && this.strategy === "local") {
         bcrypt.genSalt(10, function (err, salt) {
             if (err) {
                 return next(err)

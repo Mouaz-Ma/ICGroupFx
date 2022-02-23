@@ -10,6 +10,9 @@ const { isLoggedIn, isAuthor, validateAnalysis, verifyToken } = require('../midd
 router.route('/register')
     .post(catchAsync(users.register));
 
+router.route('/registerSocial')
+    .post(catchAsync(users.registerSocial));
+
 router.route('/login')
     .post(users.login)
 // profile

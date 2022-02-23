@@ -19,7 +19,8 @@ module.exports.register = async (req, res) => {
                 username: req.body.username,
                 email: req.body.email,
                 password: req.body.password,
-                uniqueString: uniqueString
+                uniqueString: uniqueString,
+                strategy: req.body.strategy
               });
               await newUser.save().then(() => {
                 let token = jwt.sign(newUser.toJSON(), process.env.SECRETJWT, {
@@ -66,6 +67,41 @@ module.exports.register = async (req, res) => {
             })
           }
           }
+
+// registerSocial end point
+module.exports.registerSocial = async (req, res) => {
+  try {
+    if (!req.body.email || await User.findOne({ email: req.body.email})) {
+      res.json({
+        success: false,
+        message: "email is missing or user exist"
+      })
+    } else {
+      let newUser = new User({
+        username: req.body.username,
+        email: req.body.email,
+        strategy: req.body.strategy,
+        isVerified: true
+      }, (err) => {
+        if(err) console.log(err);
+      });
+      await newUser.save().then(() => {
+        res.json({
+          success: true,
+          message: "Your account has been saved",
+          newUser : newUser
+        })
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: "Your account could not be saved. Error: ",
+      err
+    })
+  }
+}
 
 module.exports.emailVerify = async (req,res) => {
   const { uniqueString } = req.params;
