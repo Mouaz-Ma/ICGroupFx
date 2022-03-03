@@ -39,7 +39,7 @@ module.exports.register = async (req, res) => {
                   from: 'maatouq.45@gmail.com',
                   subject: 'Verify new Account',
                   text: 'Please click on the following link to verify your account: \n\n' +
-                  // add https to this and o the nuxt app home page and change the url
+                    // add https to this and o the nuxt app home page and change the url
                     'http://localhost:3000/users/verify/' + uniqueString + '\n\n'
                 };
                 smtpTransport.sendMail(mailOptions, function (err) {
@@ -196,7 +196,7 @@ module.exports.requestReset = (req, res, next) => {
     },
     function(token, done) {
       User.findOne({ email: req.body.email }, function(err, user) {
-        if (!user || req.body.email === null) {
+        if (!user || req.body.email === null || user.strategy != "local") {
           res.json({
             success: false,
             message: "No account with that email address exists."
@@ -244,7 +244,8 @@ module.exports.requestReset = (req, res, next) => {
 
 module.exports.passResetGet = (req, res) => {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
-    if (!user) {
+    console.log(user.strategy)
+    if (!user || user.strategy != "local") {
       res.json({
         success: false,
         message: 'Password reset token is invalid or has expired.'
@@ -262,7 +263,7 @@ module.exports.passResetPost = (req, res) => {
   async.waterfall([
     function(done) {
       User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
-        if (!user) {
+        if (!user || user.strategy != "local") {
           res.json({
             success: false,
             message: 'Password reset token is invalid or has expired.'
@@ -276,7 +277,7 @@ module.exports.passResetPost = (req, res) => {
               expiresIn: 604800 // 1 week
             })
             let smtpTransport = nodemailer.createTransport({
-              service: 'Gmail', 
+              service: 'Gmail',
               auth: {
                 user: process.env.MAILUSER,
                 pass: process.env.MAILPASS
@@ -304,7 +305,7 @@ module.exports.passResetPost = (req, res) => {
             });
           });
         }
-          })
+      })
     },
   ], function(err) {
     res.json({

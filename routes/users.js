@@ -25,6 +25,7 @@ router.route('/verify/:uniqueString')
 
 // password reset
 router.route('/requestReset').post(users.requestReset)
+
 router.route('/passReset/:token')
     .get(users.passResetGet)
     .post(users.passResetPost)
