@@ -8,19 +8,23 @@ module.exports.index = async (req, res) => {
     res.render('blogs/index', { blogs })
 }
 
-// new blog form render
-module.exports.renderNewForm = (req, res) => {
-    res.render('blogs/new');
-}
 
 // creating a new blog
 module.exports.createBlog = async (req, res, next) => {
-    const blog = new Blog(req.body.Blog);
-    blog.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    blog.author = req.user._id;
-    await blog.save();
-    req.flash('success', 'Successfully made a new blog!');
-    res.redirect(`/blogs/${blog._id}`)
+    try {
+        console.log(req.body);
+        const blog = new Blog(req.body.Blog);
+        blog.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+        blog.author = req.user._id;
+        await blog.save();
+        res.json({
+            success: true,
+            blog: blog,
+            message: "Successfully made a new blog!"
+          })
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 // showing one blog

@@ -5,46 +5,46 @@ const Analysis = require('./models/analysis');
 const Review = require('./models/review');
 const jwt = require('jsonwebtoken');
 
-module.exports.isLoggedIn = (req, res, next) => {
-    if (!req.isAuthenticated()) {
-        req.session.returnTo = req.originalUrl
-        req.flash('error', 'You must be signed in first!');
-        return res.redirect('/login');
-    }
-    next();
-}
+// module.exports.isLoggedIn = (req, res, next) => {
+//     if (!req.isAuthenticated()) {
+//         req.session.returnTo = req.originalUrl
+//         req.flash('error', 'You must be signed in first!');
+//         return res.redirect('/login');
+//     }
+//     next();
+// }
 
-module.exports.validateBlog = (req, res, next) => {
-    const { error } = blogSchema.validate(req.body);
-    console.log(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+// module.exports.validateBlog = (req, res, next) => {
+//     const { error } = blogSchema.validate(req.body);
+//     console.log(req.body);
+//     if (error) {
+//         const msg = error.details.map(el => el.message).join(',')
+//         throw new ExpressError(msg, 400)
+//     } else {
+//         next();
+//     }
+// }
 
-module.exports.validateAnalysis = (req, res, next) => {
-    const { error } = analysisSchema.validate(req.body);
-    console.log(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+// module.exports.validateAnalysis = (req, res, next) => {
+//     const { error } = analysisSchema.validate(req.body);
+//     console.log(req.body);
+//     if (error) {
+//         const msg = error.details.map(el => el.message).join(',')
+//         throw new ExpressError(msg, 400)
+//     } else {
+//         next();
+//     }
+// }
 
-module.exports.validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+// module.exports.validateReview = (req, res, next) => {
+//     const { error } = reviewSchema.validate(req.body);
+//     if (error) {
+//         const msg = error.details.map(el => el.message).join(',')
+//         throw new ExpressError(msg, 400)
+//     } else {
+//         next();
+//     }
+// }
 
 module.exports.isBlogAuthor = async (req, res, next) => {
     const { id } = req.params;

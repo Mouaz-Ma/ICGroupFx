@@ -14,17 +14,11 @@ ImageSchema.virtual('thumbnail').get(function () {
 
 // const opts = { toJSON: { virtuals: true } };
 
-const UserSchema = new Schema({
-    userType: {
-        type: String
-    },
-    affiliateReferance: {
+const AffiliateSchema = new Schema({
+    affiliateReferance: [{
         type: Schema.Types.ObjectId,
-        ref: 'Affiliate'
-    },
-    strategy: {
-        type: String
-    },
+        ref: 'User'
+    }],
     uniqueString: {
         type: String
     },
@@ -48,7 +42,7 @@ const UserSchema = new Schema({
     resetPasswordExpires: Date
 });
 
-UserSchema.pre('save', function (next) {
+AffiliateSchema.pre('save', function (next) {
     let user = this;
     if ((this.isModified('password') || this.isNew) && this.strategy === "local") {
         bcrypt.genSalt(10, function (err, salt) {
@@ -69,9 +63,9 @@ UserSchema.pre('save', function (next) {
     }
 })
 
-UserSchema.methods.comparePassword = function(password, next){
+AffiliateSchema.methods.comparePassword = function(password, next){
     let user = this;
     return bcrypt.compareSync(password, user.password);
 }
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Affiliate', AffiliateSchema);
