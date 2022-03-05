@@ -21,7 +21,8 @@ const createError = require('http-errors'),
     mongoSanitize = require('express-mongo-sanitize'),
            logger = require('morgan'),
               jwt = require('jsonwebtoken'),
-               io = require("socket.io")(http);
+               io = require("socket.io")(http),
+             cors = require('cors');
 
 // Routes
 const indexRouter = require('./routes/index');
@@ -59,6 +60,7 @@ app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

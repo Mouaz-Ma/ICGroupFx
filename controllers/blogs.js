@@ -4,18 +4,27 @@ const { cloudinary } = require("../cloudinary");
 
 // get all blogs in the index
 module.exports.index = async (req, res) => {
-    const blogs = await Blog.find({}).populate('popupText');
-    res.render('blogs/index', { blogs })
+    try{
+        const blogs = await Blog.find({}).populate('author');
+        res.json({
+            success: true,
+            blogs: blogs,
+            message: "Loaded all blogs"
+          })
+    } catch(err){
+        console.log(err);
+    }
+    
 }
 
 
 // creating a new blog
 module.exports.createBlog = async (req, res, next) => {
     try {
-        console.log(req.body);
-        const blog = new Blog(req.body.Blog);
-        blog.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-        blog.author = req.user._id;
+        const blog = new Blog(req.body);
+        blog.tags = req.body.tagsInput.split(' ');
+        blog.image = req.files[0];
+        blog.author = req.body.userID;
         await blog.save();
         res.json({
             success: true,

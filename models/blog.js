@@ -17,7 +17,8 @@ const opts = { toJSON: { virtuals: true } };
 
 const BlogSchema = new Schema({
     title: String,
-    images: [ImageSchema],
+    image: ImageSchema,
+    tags: [{type: String}],
     content: String,
     author: {
         type: Schema.Types.ObjectId,

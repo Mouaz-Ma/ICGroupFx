@@ -11,7 +11,7 @@ router.route('/')
     .get(catchAsync(blogs.index))
 
 router.route('/new')
-.post(upload.array('image'),  catchAsync(blogs.createBlog))
+.post(upload.array('photo'),  catchAsync(blogs.createBlog))
 
 
 
