@@ -23,9 +23,10 @@ module.exports.createBlog = async (req, res, next) => {
     try {
         const blog = new Blog(req.body);
         blog.tags = req.body.tagsInput.split(' ');
-        blog.image = req.files[0];
+        blog.image = {url: req.files[0].path, filename: req.files[0].originalname};
         blog.author = req.body.userID;
         await blog.save();
+        console.log(blog.createdAt);
         res.json({
             success: true,
             blog: blog,

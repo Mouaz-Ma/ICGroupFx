@@ -29,8 +29,9 @@ const BlogSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Review'
         }
-    ]
-}, opts);
+    ],
+   
+}, { timestamps: true }, opts);
 
 
 BlogSchema.virtual('properties.popUpMarkup').get(function () {
