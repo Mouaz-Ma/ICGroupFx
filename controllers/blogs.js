@@ -22,7 +22,7 @@ module.exports.index = async (req, res) => {
 module.exports.createBlog = async (req, res, next) => {
     try {
         const blog = new Blog(req.body);
-        blog.tags = req.body.tagsInput.split(' ');
+        blog.tags = req.body.tagsInput.split(',');
         blog.image = {url: req.files[0].path, filename: req.files[0].originalname};
         blog.author = req.body.userID;
         await blog.save();
@@ -39,17 +39,28 @@ module.exports.createBlog = async (req, res, next) => {
 
 // showing one blog
 module.exports.showBlog = async (req, res,) => {
-    const blog = await Blog.findById(req.params.id).populate({
-        path: 'reviews',
-        populate: {
-            path: 'author'
-        }
-    }).populate('author');
-    if (!blog) {
-        req.flash('error', 'Cannot find that blog!');
-        return res.redirect('/blogs');
+    console.log(req.params.id)
+    // const blog = await Blog.findById(req.params.id).populate({
+    //     path: 'reviews',
+    //     populate: {
+    //         path: 'author'
+    //     }
+    // }).populate('author');
+    try{
+        const blog = await Blog.findById(req.params.id).populate('author');
+        console.log(blog)
+        res.json({
+            success: true,
+            blog: blog,
+            message: "Blog found"
+          })
+    } catch (err) {
+        console.log(err)
+        res.json({
+            success: false,
+            message: err
+          })
     }
-    res.render('blogs/show', { blog });
 }
 
 // rendering Edit form

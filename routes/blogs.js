@@ -15,10 +15,10 @@ router.route('/new')
 
 
 
-// router.route('/:id')
-//     .get(catchAsync(blogs.showBlog))
-//     .put(isLoggedIn, isAuthor, upload.array('image'), catchAsync(blogs.updateBlog))
-//     .delete(isLoggedIn, isAuthor, catchAsync(blogs.deleteBlog));
+router.route('/:id')
+    .get(catchAsync(blogs.showBlog))
+    // .put(isLoggedIn, isAuthor, upload.array('image'), catchAsync(blogs.updateBlog))
+    // .delete(isLoggedIn, isAuthor, catchAsync(blogs.deleteBlog));
 
 // router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(blogs.renderEditForm))
 

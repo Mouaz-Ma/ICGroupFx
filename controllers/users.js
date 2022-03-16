@@ -124,7 +124,6 @@ module.exports.emailVerify = async (req,res) => {
     res.status(500).json({
       success: false,
       message: "Error occured when verifing your account ",
-      err
     })
   }
 }
