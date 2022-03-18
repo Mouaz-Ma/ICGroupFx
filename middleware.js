@@ -46,33 +46,35 @@ const jwt = require('jsonwebtoken');
 //     }
 // }
 
-module.exports.isBlogAuthor = async (req, res, next) => {
-    const { id } = req.params;
-    const blog = await Blog.findById(id);
-    if (!blog.author.equals(req.user._id)) {
-        req.flash('error', 'You do not have permission to do that!');
-        return res.redirect(`/blogs/${id}`);
-    }
-    next();
-}
+// module.exports.isBlogAuthor = async (req, res, next) => {
+//     const { id } = req.params;
+//     const blog = await Blog.findById(id);
+//     if (!blog.author.equals(req.user._id)) {
+//         req.flash('error', 'You do not have permission to do that!');
+//         return res.redirect(`/blogs/${id}`);
+//     }
+//     next();
+// }
 
-module.exports.isAnalysisAuthor = async (req, res, next) => {
-    const { id } = req.params;
-    const analysis = await Analysis.findById(id);
-    if (!analysis.author.equals(req.user._id)) {
-        req.flash('error', 'You do not have permission to do that!');
-        return res.redirect(`/analysiss/${id}`);
-    }
-    next();
-}
+// module.exports.isAnalysisAuthor = async (req, res, next) => {
+//     const { id } = req.params;
+//     const analysis = await Analysis.findById(id);
+//     if (!analysis.author.equals(req.user._id)) {
+//         req.flash('error', 'You do not have permission to do that!');
+//         return res.redirect(`/analysiss/${id}`);
+//     }
+//     next();
+// }
 
-module.exports.isReviewAuthor = async (req, res, next) => {
-    const { id, reviewId } = req.params;
-    const review = await Review.findById(reviewId);
-    if (!review.author.equals(req.user._id)) {
-        req.flash('error', 'You do not have permission to do that!');
-        return res.redirect(`/blogs/${id}`);
-    }
+module.exports.isAdministrator = async (req, res, next) => {
+    // const { id } = req.params.user.id;
+    console.log(req.params)
+    // const user = await User.findById(id);
+    // if (user.userType != "Administrator") {
+    //     // req.flash('error', 'You do not have permission to do that!');
+    //     // return res.redirect(`/blogs/${id}`);
+    //     console.log("you can't proceed")
+    // }
     next();
 }
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const blogs = require('../controllers/blogs');
 const catchAsync = require('../utils/catchAsync');
-const { isLoggedIn, isAuthor } = require('../middleware');
+const { isLoggedIn, isAdministrator } = require('../middleware');
 const multer = require('multer');
 const { storage } = require('../cloudinary');
 const upload = multer({ storage });
@@ -17,8 +17,8 @@ router.route('/new')
 
 router.route('/:id')
     .get(catchAsync(blogs.showBlog))
-    // .put(isLoggedIn, isAuthor, upload.array('image'), catchAsync(blogs.updateBlog))
-    // .delete(isLoggedIn, isAuthor, catchAsync(blogs.deleteBlog));
+    .put(isAdministrator, upload.array('photo'), catchAsync(blogs.updateBlog))
+    .delete(isAdministrator, blogs.deleteBlog);
 
 // router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(blogs.renderEditForm))
 
