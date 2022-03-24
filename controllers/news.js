@@ -81,7 +81,7 @@ module.exports.updateNew = async (req, res, next) => {
                 $set: {
                     title: req.body.title,
                     tags: req.body.tagsInput.split(','),
-                    image: {url: req.files[0].path, filename: req.files[0].filename.split('/')[1]},
+                    image: {url: req.files[0].path, filename: req.files[0].filename},
                     content: req.body.content
                 }
             });

@@ -17,8 +17,8 @@ router.route('/new')
 
 router.route('/:id')
     .get(catchAsync(blogs.showBlog))
-    .put(isAdministrator, upload.array('photo'), catchAsync(blogs.updateBlog))
-    .delete(isAdministrator, blogs.deleteBlog);
+    .put(upload.array('photo'), catchAsync(blogs.updateBlog))
+    .delete(blogs.deleteBlog);
 
 // router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(blogs.renderEditForm))
 

@@ -29,6 +29,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const blogsRouter = require('./routes/blogs');
 const newsRouter = require('./routes/news');
+const analysisRouter = require('./routes/analysis');
 
 // error
 const ExpressError = require('./utils/ExpressError');
@@ -162,6 +163,7 @@ app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/blogs', blogsRouter);
 app.use('/api/news', newsRouter);
+app.use('/api/analysis', analysisRouter);
 
   //  web sockets
   io.on("connect", function(socket) {
