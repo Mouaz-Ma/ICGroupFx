@@ -40,7 +40,7 @@ module.exports.register = async (req, res) => {
                   subject: 'Verify new Account',
                   text: 'Please click on the following link to verify your account: \n\n' +
                     // add https to this and o the nuxt app home page and change the url
-                    'http://localhost:3000/users/verify/' + uniqueString + '\n\n'
+                    'https://icgroup.herokuapp.com/users/verify/' + uniqueString + '\n\n'
                 };
                 smtpTransport.sendMail(mailOptions, function (err) {
                   if (err) {
@@ -225,7 +225,7 @@ module.exports.requestReset = (req, res, next) => {
         // dont forget the https and the domain name for the front end 
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-          'http://localhost:3000/users/reset/' + token + '\n\n' +
+          'https://icgroup.herokuapp.com/users/reset/' + token + '\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
@@ -342,5 +342,32 @@ module.exports.user = async (req, res) => {
       success: false,
       message: err.message
     });
+  }
+}
+
+module.exports.contact =(req, res) => {
+  try{
+    console.log(req.body)
+    const smtpTransport = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: process.env.MAILUSER,
+        pass: process.env.MAILPASS
+      }
+    });
+    const mailOptions = {
+      to: process.env.MAILUSER,
+      from: req.body.email,
+      subject: 'new inquiry from ' + req.body.name,
+      text: 'telphone number: ' + req.body.phone + ' \n' + req.body.description
+    };
+    smtpTransport.sendMail(mailOptions, function (err) {
+      res.json({
+        success: true,
+        message: 'An e-mail has been sent'
+      })
+    });
+  } catch(err){
+    console.log(err)
   }
 }

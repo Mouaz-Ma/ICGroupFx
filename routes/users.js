@@ -35,4 +35,7 @@ router.route('/updateUser')
 
 router.post('/logout', users.logout)
 
+// contact form
+router.post('/contact', users.contact)
+
 module.exports = router;
