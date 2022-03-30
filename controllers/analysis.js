@@ -5,7 +5,7 @@ const { cloudinary } = require("../cloudinary");
 // get all analysis Categories
 module.exports.getAllCategories = async (req, res) => {
     try {
-        const categories = await analysisCategory.find({})
+        const categories = await analysisCategory.find({});
         res.json({
             success: true,
             categories: categories,
@@ -43,7 +43,7 @@ module.exports.createNewCategory = async (req, res) => {
 // get all analysis in the index with a specific category
 module.exports.index = async (req, res) => {
     try{
-        const analysis = await Analysis.find({'category' : req.params.id});
+        const analysis = await Analysis.find({'category' : req.params.id}).populate('category');
         res.json({
             success: true,
             analysis: analysis,
@@ -64,7 +64,7 @@ module.exports.createAnalysis = async (req, res, next) => {
         const analysis = new Analysis(req.body);
         analysis.tags = req.body.tagsInput.split(',');
         if (!req.files[0]){
-            analysis.image = {url: 'https://res.cloudinary.com/mo3az/image/upload/v1647520361/ICGroup/main-bg_dc0fhq.jpg', filename: 'Default Image'};
+            analysis.image = {url: 'https://res.cloudinary.com/mo3az/image/upload/v1648640118/ICGroup/towfiqu-barbhuiya-nApaSgkzaxg-unsplash_aiqkkn.jpg', filename: 'Default analysis Image'};
         } else {
             analysis.image = {url: req.files[0].path, filename: req.files[0].filename };
         }

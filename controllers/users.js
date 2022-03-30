@@ -220,7 +220,7 @@ module.exports.requestReset = (req, res, next) => {
       });
       var mailOptions = {
         to: user.email,
-        from: 'maatouq.45@gmail.com',
+        from: 'ICGroup',
         subject: 'Password Reset',
         // dont forget the https and the domain name for the front end 
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
@@ -349,7 +349,8 @@ module.exports.contact =(req, res) => {
   try{
     console.log(req.body)
     const smtpTransport = nodemailer.createTransport({
-      service: 'Gmail',
+      host: "icgroupsfx.com",
+      port: 465,
       auth: {
         user: process.env.MAILUSER,
         pass: process.env.MAILPASS
@@ -359,15 +360,23 @@ module.exports.contact =(req, res) => {
       to: process.env.MAILUSER,
       from: req.body.email,
       subject: 'new inquiry from ' + req.body.name,
-      text: 'telphone number: ' + req.body.phone + ' \n' + req.body.description
+      text: 'telphone number: ' + req.body.phone + ' \n' + 'email: ' + req.body.email + ' \n' + req.body.description
     };
     smtpTransport.sendMail(mailOptions, function (err) {
-      res.json({
-        success: true,
-        message: 'An e-mail has been sent'
-      })
+      if(err){
+        console.log(err)
+      } else {
+        res.json({
+          success: true,
+          message: 'An e-mail has been sent'
+        })
+      }
     });
   } catch(err){
     console.log(err)
+    res.json({
+      success: false,
+      message: err,
+    });
   }
 }
