@@ -3,75 +3,84 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const crypto = require("crypto");
 const async = require("async");
-const { isLoggedIn, isAuthor, validateAnalysis, verifyToken, randString } = require('../middleware');
+const {
+  isLoggedIn,
+  isAuthor,
+  validateAnalysis,
+  verifyToken,
+  randString
+} = require('../middleware');
 
 // you need to add facebook and google here
 module.exports.register = async (req, res) => {
-          try {
-            if (!req.body.email || !req.body.password) {
-              res.json({
-                success: false,
-                message: "email or password missing"
-              })
-            } else {
-              const uniqueString = randString();
-              let newUser = new User({
-                username: req.body.username,
-                email: req.body.email,
-                password: req.body.password,
-                uniqueString: uniqueString,
-                strategy: req.body.strategy
-              });
-              await newUser.save().then(() => {
-                let token = jwt.sign(newUser.toJSON(), process.env.SECRETJWT, {
-                  expiresIn: 604800 // 1 week
-                });
-                let smtpTransport = nodemailer.createTransport({
-                  service: 'Gmail',
-                  auth: {
-                    user: process.env.MAILUSER,
-                    pass: process.env.MAILPASS
-                  },
-                  secure: true
-                });
-                let mailOptions = {
-                  to: newUser.email,
-                  from: 'maatouq.45@gmail.com',
-                  subject: 'Verify new Account',
-                  text: 'Please click on the following link to verify your account: \n\n' +
-                    // add https to this and o the nuxt app home page and change the url
-                    'https://icgroup.herokuapp.com/users/verify/' + uniqueString + '\n\n'
-                };
-                smtpTransport.sendMail(mailOptions, function (err) {
-                  if (err) {
-                    console.log(err);
-                  } else {
-                    res.json({
-                      success: true,
-                      token: token,
-                      message: "Your account has been saved"
-                    })
-                    console.log('mail sent');
-                    // req.flash('success', 'An e-mail has been sent to ' + newUser.email + ' with further instructions.');
-                  }
-                });
-
-              });
-            }
-          } catch (err) {
+  try {
+    if (!req.body.email || !req.body.password) {
+      res.json({
+        success: false,
+        message: "email or password missing"
+      })
+    } else {
+      const uniqueString = randString();
+      const newUser = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        uniqueString: uniqueString,
+        strategy: req.body.strategy
+      });
+      await newUser.save().then(() => {
+        const token = jwt.sign(newUser.toJSON(), process.env.SECRETJWT, {
+          expiresIn: 604800 // 1 week
+        });
+        const smtpTransport = nodemailer.createTransport({
+          host: "icgroupsfx.com",
+          port: 465,
+          auth: {
+            user: process.env.MAILUSER,
+            pass: process.env.MAILPASS
+          },
+          secure: true
+        });
+        let mailOptions = {
+          to: newUser.email,
+          from: process.env.MAILUSER,
+          subject: 'Verify new Account',
+          text: 'Please click on the following link to verify your account: \n\n' +
+            // add https to this and o the nuxt app home page and change the url
+            'https://icgroup.herokuapp.com/users/verify/' + uniqueString + '\n\n'
+        };
+        smtpTransport.sendMail(mailOptions, function (err) {
+          if (err) {
             console.log(err);
-            res.status(500).json({
-              success: false,
-              message: "Your account could not be saved. Error: ",
-              err
+          } else {
+            res.json({
+              success: true,
+              token: token,
+              message: "Your account has been saved"
             })
+            console.log('mail sent');
+            // req.flash('success', 'An e-mail has been sent to ' + newUser.email + ' with further instructions.');
           }
-          }
+        });
+
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: "Your account could not be saved. Error: ",
+      err
+    })
+  }
+}
 
 // registerSocial end point
 module.exports.registerSocial = async (req, res) => {
   try {
-    if (!req.body.email || await User.findOne({ email: req.body.email})) {
+    if (!req.body.email || await User.findOne({
+        email: req.body.email
+      })) {
       res.json({
         success: false,
         message: "email is missing or user exist"
@@ -83,13 +92,13 @@ module.exports.registerSocial = async (req, res) => {
         strategy: req.body.strategy,
         isVerified: true
       }, (err) => {
-        if(err) console.log(err);
+        if (err) console.log(err);
       });
       await newUser.save().then(() => {
         res.json({
           success: true,
           message: "Your account has been saved",
-          newUser : newUser
+          newUser: newUser
         })
       });
     }
@@ -103,11 +112,15 @@ module.exports.registerSocial = async (req, res) => {
   }
 }
 
-module.exports.emailVerify = async (req,res) => {
-  const { uniqueString } = req.params;
+module.exports.emailVerify = async (req, res) => {
+  const {
+    uniqueString
+  } = req.params;
   // check is there anyone with the same string
-  const user = await User.findOne({ uniqueString: uniqueString})
-  if(user){
+  const user = await User.findOne({
+    uniqueString: uniqueString
+  })
+  if (user) {
     // if there is one verify them
     user.isVerified = true
     let token = jwt.sign(user.toJSON(), process.env.SECRETJWT, {
@@ -120,19 +133,19 @@ module.exports.emailVerify = async (req,res) => {
       token: token,
       message: "verified"
     })
-  } else { 
+  } else {
     res.status(500).json({
       success: false,
       message: "Error occured when verifing your account ",
     })
   }
 }
-  
-  // login
-  module.exports.login = async (req, res) => {
-    try {
-      const foundUser = await User.findOne({
-        email: req.body.email
+
+// login
+module.exports.login = async (req, res) => {
+  try {
+    const foundUser = await User.findOne({
+      email: req.body.email
     });
     if (!foundUser || !req.body.password) {
       res.json({
@@ -163,10 +176,12 @@ module.exports.emailVerify = async (req,res) => {
 }
 // updating profile
 module.exports.updateUser = async (req, res) => {
-  try{
-    let foundUser = await User.findOne({ _id: req.decoded._id})
+  try {
+    let foundUser = await User.findOne({
+      _id: req.decoded._id
+    })
 
-    if(foundUser){
+    if (foundUser) {
       if (req.body.name) foundUser.name = req.body.name;
       if (req.body.email) foundUser.email = req.body.email;
       if (req.body.password) foundUser.password = req.body.password;
@@ -177,7 +192,7 @@ module.exports.updateUser = async (req, res) => {
         message: "Successfully updated"
       })
     }
-  } catch (err){
+  } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
@@ -187,40 +202,43 @@ module.exports.updateUser = async (req, res) => {
 // reset password
 module.exports.requestReset = (req, res, next) => {
   async.waterfall([
-    function(done) {
-      crypto.randomBytes(20, function(err, buf) {
-        var token = buf.toString('hex');
+    function (done) {
+      crypto.randomBytes(20, function (err, buf) {
+        const token = buf.toString('hex');
         done(err, token);
       });
     },
-    function(token, done) {
-      User.findOne({ email: req.body.email }, function(err, user) {
+    function (token, done) {
+      User.findOne({
+        email: req.body.email
+      }, function (err, user) {
         if (!user || req.body.email === null || user.strategy != "local") {
           res.json({
             success: false,
             message: "No account with that email address exists."
           })
         } else {
-                  user.resetPasswordToken = token;
-                  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-          
-                  user.save(function(err) {
-                    done(err, token, user);
-                  });
+          user.resetPasswordToken = token;
+          user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+          user.save(function (err) {
+            done(err, token, user);
+          });
         }
       });
     },
-    function(token, user, done) {
-      var smtpTransport = nodemailer.createTransport({
-        service: 'Gmail', 
+    function (token, user, done) {
+      const smtpTransport = nodemailer.createTransport({
+        host: "icgroupsfx.com",
+        port: 465,
         auth: {
-            user: process.env.MAILUSER,
-            pass: process.env.MAILPASS
-        }
+          user: process.env.MAILUSER,
+          pass: process.env.MAILPASS
+        },
       });
-      var mailOptions = {
+      const mailOptions = {
         to: user.email,
-        from: 'ICGroup',
+        from: process.env.MAILUSER,
         subject: 'Password Reset',
         // dont forget the https and the domain name for the front end 
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
@@ -228,21 +246,31 @@ module.exports.requestReset = (req, res, next) => {
           'https://icgroup.herokuapp.com/users/reset/' + token + '\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
-      smtpTransport.sendMail(mailOptions, function(err) {
-        res.json({
-          success: true,
-          message: 'An e-mail has been sent to ' + user.email + ' with further instructions.'
-        })
+      smtpTransport.sendMail(mailOptions, function (err) {
+        if (err){
+          console.log(err)
+        } else {
+          res.json({
+            success: true,
+            message: 'An e-mail has been sent to ' + user.email + ' with further instructions.'
+          })
+          console.log('request reset mail sent')
+        }
       });
     }
-  ], function(err) {
+  ], function (err) {
     if (err) return next(err);
     res.sendStatus(500);
   });
 }
 
 module.exports.passResetGet = (req, res) => {
-  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+  User.findOne({
+    resetPasswordToken: req.params.token,
+    resetPasswordExpires: {
+      $gt: Date.now()
+    }
+  }, function (err, user) {
     console.log(user.strategy)
     if (!user || user.strategy != "local") {
       res.json({
@@ -260,8 +288,13 @@ module.exports.passResetGet = (req, res) => {
 
 module.exports.passResetPost = (req, res) => {
   async.waterfall([
-    function(done) {
-      User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+    function (done) {
+      User.findOne({
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: {
+          $gt: Date.now()
+        }
+      }, function (err, user) {
         if (!user || user.strategy != "local") {
           res.json({
             success: false,
@@ -271,16 +304,18 @@ module.exports.passResetPost = (req, res) => {
           user.password = req.body.password;
           user.resetPasswordToken = undefined;
           user.resetPasswordExpires = undefined;
-          user.save(function(err) {
+          user.save(function (err) {
             let token = jwt.sign(user.toJSON(), process.env.SECRETJWT, {
               expiresIn: 604800 // 1 week
             })
             let smtpTransport = nodemailer.createTransport({
-              service: 'Gmail',
+              host: "icgroupsfx.com",
+              port: 465,
               auth: {
                 user: process.env.MAILUSER,
                 pass: process.env.MAILPASS
-              }
+              },
+              secure: true
             });
             let mailOptions = {
               to: user.email,
@@ -289,8 +324,8 @@ module.exports.passResetPost = (req, res) => {
               text: 'Hello,\n\n' +
                 'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
             };
-            smtpTransport.sendMail(mailOptions, function(err) {
-              if(err){
+            smtpTransport.sendMail(mailOptions, function (err) {
+              if (err) {
                 console.log(err);
               } else {
                 console.log("second email sent");
@@ -306,7 +341,7 @@ module.exports.passResetPost = (req, res) => {
         }
       })
     },
-  ], function(err) {
+  ], function (err) {
     res.json({
       success: false,
       message: err,
@@ -317,7 +352,7 @@ module.exports.passResetPost = (req, res) => {
 
 
 
-module.exports.logout =(req, res) => {
+module.exports.logout = (req, res) => {
   req.logout();
   // req.session.destroy();
   res.json({
@@ -329,9 +364,11 @@ module.exports.logout =(req, res) => {
 
 // user profile
 module.exports.user = async (req, res) => {
-  try{
-    let foundUser = await User.findOne({ _id: req.decoded._id});
-    if (foundUser){
+  try {
+    let foundUser = await User.findOne({
+      _id: req.decoded._id
+    });
+    if (foundUser) {
       res.json({
         success: true,
         user: foundUser
@@ -345,9 +382,29 @@ module.exports.user = async (req, res) => {
   }
 }
 
-module.exports.contact =(req, res) => {
-  try{
-    console.log(req.body)
+module.exports.contact = (req, res) => {
+  try {
+    let investment = req.body.iniInvestment;
+    let initialInvestment = '0';
+    switch (investment) {
+      case 1:
+        initialInvestment = '100$';
+        break;
+      case 2:
+        initialInvestment = '1000$';
+        break;
+      case 3:
+        initialInvestment = '5000$';
+        break;
+      case 4:
+        initialInvestment = '10,000$';
+        break;
+      case 5:
+        initialInvestment = '50,000$';
+        break;
+      default:
+        initialInvestment = '100$';
+    }
     const smtpTransport = nodemailer.createTransport({
       host: "icgroupsfx.com",
       port: 465,
@@ -360,10 +417,10 @@ module.exports.contact =(req, res) => {
       to: process.env.MAILUSER,
       from: req.body.email,
       subject: 'new inquiry from ' + req.body.name,
-      text: 'telphone number: ' + req.body.phone + ' \n' + 'email: ' + req.body.email + ' \n' + req.body.description
+      text: 'telphone number: ' + req.body.phone + ' \n' + 'email: ' + req.body.email + ' \n' + 'Trading Type: ' + req.body.tradingType + ' \n' + 'Initial Investment:' + initialInvestment + ' \n' + req.body.description + ' \n'
     };
     smtpTransport.sendMail(mailOptions, function (err) {
-      if(err){
+      if (err) {
         console.log(err)
       } else {
         res.json({
@@ -372,7 +429,7 @@ module.exports.contact =(req, res) => {
         })
       }
     });
-  } catch(err){
+  } catch (err) {
     console.log(err)
     res.json({
       success: false,
