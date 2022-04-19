@@ -42,7 +42,10 @@ const UserSchema = new Schema({
     password: {
         type: String
     },
-    userType: String,
+    userType: {
+        type: String,
+        default: 'Normal User'
+    },
     isVerified: {type: Boolean, default: false},
     resetPasswordToken: String,
     resetPasswordExpires: Date

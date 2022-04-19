@@ -112,6 +112,49 @@ module.exports.registerSocial = async (req, res) => {
   }
 }
 
+module.exports.getVerified = async (req, res) => {
+  try {
+    console.log(req.params)
+    const userFound = await User.findById(req.params.id)
+    const smtpTransport = nodemailer.createTransport({
+      host: "icgroupsfx.com",
+      port: 465,
+      auth: {
+        user: process.env.MAILUSER,
+        pass: process.env.MAILPASS
+      },
+      secure: true
+    });
+    const mailOptions = {
+      to: userFound.email,
+      from: process.env.MAILUSER,
+      subject: 'Verify Account Request',
+      text: 'Please click on the following link to verify your account: \n\n' +
+        // add https to this and o the nuxt app home page and change the url
+        'https://icgroup.herokuapp.com/users/verify/' + userFound.uniqueString + '\n\n'
+    };
+    smtpTransport.sendMail(mailOptions, function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json({
+          success: true,
+          message: "Your account has been saved"
+        })
+        console.log('mail sent');
+        // req.flash('success', 'An e-mail has been sent to ' + newUser.email + ' with further instructions.');
+      }
+    });
+  } catch(err){
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: "Your account could not be saved. Error ",
+      err
+    })
+  }
+}
+
 module.exports.emailVerify = async (req, res) => {
   const {
     uniqueString

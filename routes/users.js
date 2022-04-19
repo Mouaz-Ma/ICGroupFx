@@ -22,6 +22,9 @@ router.route('/user')
 // EmailVerifying
 router.route('/verify/:uniqueString')
     .get(users.emailVerify)
+// get verified
+router.route('/varifyById/:id')
+    .get(users.getVerified)
 
 // password reset
 router.route('/requestReset').post(users.requestReset)
