@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, isAuthor, validateAnalysis } = require('../middleware');
 const multer = require('multer');
 const { storage } = require('../cloudinary');
-// const upload = multer({ storage });
+const upload = multer({ storage });
 
 const Analysis = require('../models/analysis');
 
@@ -20,16 +20,16 @@ router.route('/:id')
     .get(catchAsync(analysis.index))
 
 
-function uploadFile(req, res, next) {
-    const upload = multer({ storage }).fields([{name: 'photo', maxCount: 1}, {name: 'audio', maxCount: 1}])
+async function uploadFile(req, res, next) {
+    const upload = await multer({ storage }).fields([{name: 'photo', maxCount: 1}, {name: 'audio', maxCount: 1, resource_type: "video"}])
 
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             // A Multer error occurred when uploading.
-            console.log("first error" + err)
+            console.log("first error" + JSON.stringify(err))
         } else if (err) {
             // An unknown error occurred when uploading.
-            console.log("second error" + err)
+            console.log("second error" + JSON.stringify(err))
         }
         // Everything went fine. 
         next()
@@ -38,20 +38,10 @@ function uploadFile(req, res, next) {
 
 router.route('/new').post(uploadFile, analysis.createAnalysis)
 
-// router.route('/single/:id')
-//     .get(catchAsync(analysis.getSingle))
-//     .put(upload.array('photo'),catchAsync(analysis.updateSingle))
-//     .delete(catchAsync(analysis.deleteSingle))
-
-
-// router.get('/new', isLoggedIn, analysis.renderNewForm)
-
-// router.route('/:id')
-//     .get(catchAsync(analysis.showAnalysis))
-//     .put(isLoggedIn, isAuthor, upload.array('image'), validateAnalysis, catchAsync(analysis.updateAnalysis))
-//     .delete(isLoggedIn, isAuthor, catchAsync(analysis.deleteAnalysis));
-
-// router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(analysis.renderEditForm))
+router.route('/single/:id')
+    .get(catchAsync(analysis.getSingle))
+    .put(upload.array('photo'),catchAsync(analysis.updateSingle))
+    .delete(catchAsync(analysis.deleteSingle))
 
 
 

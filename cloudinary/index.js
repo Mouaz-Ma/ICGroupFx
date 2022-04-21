@@ -11,7 +11,8 @@ const storage = new CloudinaryStorage({
     cloudinary,
     params: {
         folder: 'ICGroup',
-        allowedFormats: ['jpeg', 'png', 'jpg', 'mp3', 'mpeg']
+        resource_type: 'auto',
+        allowedFormats: ['jpeg', 'png', 'jpg', 'mp3'],
     }
 });
 
