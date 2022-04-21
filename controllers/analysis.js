@@ -1,6 +1,7 @@
 const Analysis = require('../models/analysis');
 const analysisCategory = require('../models/analysisCategory');
 const { cloudinary } = require("../cloudinary");
+const multer = require('multer');
 
 // get all analysis Categories
 module.exports.getAllCategories = async (req, res) => {
@@ -61,21 +62,28 @@ module.exports.index = async (req, res) => {
 // creating a new analysis
 module.exports.createAnalysis = async (req, res, next) => {
     try{
-        const analysis = new Analysis(req.body);
-        analysis.tags = req.body.tagsInput.split(',');
-        if (!req.files[0]){
-            analysis.image = {url: 'https://res.cloudinary.com/mo3az/image/upload/v1648640118/ICGroup/towfiqu-barbhuiya-nApaSgkzaxg-unsplash_aiqkkn.jpg', filename: 'Default analysis Image'};
-        } else {
-            analysis.image = {url: req.files[0].path, filename: req.files[0].filename };
-        }
-        analysis.author = req.body.userID;
-        analysis.category = req.body.category;
-        await analysis.save();
-        res.json({
-            success: true,
-            analysis: analysis,
-            message: "Successfully made a new analysis!"
-          })
+        console.log(req.files.photo);
+        console.log(req.body);
+        // const analysis = new Analysis(req.body);
+        // analysis.tags = req.body.tagsInput.split(',');
+        // if (!req.files.photo){
+        //     analysis.image = {url: 'https://res.cloudinary.com/mo3az/image/upload/v1648640118/ICGroup/towfiqu-barbhuiya-nApaSgkzaxg-unsplash_aiqkkn.jpg', filename: 'Default analysis Image'};
+        // } else {
+        //     analysis.image = {url: req.files.photo.path, filename: req.files.photo.filename };
+        // }
+        // if (!req.files.photo[0].audio){
+        //     analysis.audio = {url: ' ', filename: 'Default analysis Audio'};
+        // } else {
+        //     analysis.audio = {url: req.files[0].audio.path, filename: req.files[0].audio.filename };
+        // }
+        // analysis.author = req.body.userID;
+        // analysis.category = req.body.category;
+        // await analysis.save();
+        // res.json({
+        //     success: true,
+        //     analysis: analysis,
+        //     message: "Successfully made a new analysis!"
+        //   })
     } catch (err) {
         console.log(err);
     }

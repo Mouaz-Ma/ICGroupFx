@@ -11,7 +11,8 @@ const ImageSchema = new Schema({
 
 const RecordingSchema = new Schema({
     url: String,
-    filename: String
+    filename: String,
+    public_id: String
 });
 
 ImageSchema.virtual('thumbnail').get(function () {
@@ -23,6 +24,7 @@ const opts = { toJSON: { virtuals: true } };
 const AnalysisSchema = new Schema({
     title: String,
     image: ImageSchema,
+    audio: RecordingSchema,
     tags: [{type: String}],
     content: String,
     author: {

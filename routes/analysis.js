@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, isAuthor, validateAnalysis } = require('../middleware');
 const multer = require('multer');
 const { storage } = require('../cloudinary');
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 const Analysis = require('../models/analysis');
 
@@ -19,12 +19,29 @@ router.route('/analysisCategory')
 router.route('/:id')
     .get(catchAsync(analysis.index))
 
-router.route('/new').post(upload.array('photo'), catchAsync(analysis.createAnalysis))
 
-router.route('/single/:id')
-    .get(catchAsync(analysis.getSingle))
-    .put(upload.array('photo'),catchAsync(analysis.updateSingle))
-    .delete(catchAsync(analysis.deleteSingle))
+function uploadFile(req, res, next) {
+    const upload = multer({ storage }).fields([{name: 'photo', maxCount: 1}, {name: 'audio', maxCount: 1}])
+
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            // A Multer error occurred when uploading.
+            console.log("first error" + err)
+        } else if (err) {
+            // An unknown error occurred when uploading.
+            console.log("second error" + err)
+        }
+        // Everything went fine. 
+        next()
+    })
+}
+
+router.route('/new').post(uploadFile, analysis.createAnalysis)
+
+// router.route('/single/:id')
+//     .get(catchAsync(analysis.getSingle))
+//     .put(upload.array('photo'),catchAsync(analysis.updateSingle))
+//     .delete(catchAsync(analysis.deleteSingle))
 
 
 // router.get('/new', isLoggedIn, analysis.renderNewForm)
