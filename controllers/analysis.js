@@ -62,21 +62,24 @@ module.exports.index = async (req, res) => {
 // creating a new analysis
 module.exports.createAnalysis = async (req, res, next) => {
     try{
-        // check if there is any files at all if no then defaut photo and no audio
         // write url and file name for photo and audio and for each field of the analysis
         // read and delete stuff as well 
         // good night from the past to the future thanks
+
+
+    // console.log(req.files.photo[0])
+    // console.log(req.files.audio[0])
         const analysis = new Analysis(req.body);
         analysis.tags = req.body.tagsInput.split(',');
-        if (!req.files.photo){
+        if (!req.files.photo[0]){
             analysis.image = {url: 'https://res.cloudinary.com/mo3az/image/upload/v1648640118/ICGroup/towfiqu-barbhuiya-nApaSgkzaxg-unsplash_aiqkkn.jpg', filename: 'Default analysis Image'};
         } else {
-            analysis.image = {url: req.files.photo.path, filename: req.files.photo.filename };
+            analysis.image = {url: req.files.photo[0].path, filename: req.files.photo[0].filename };
         }
-        if (!req.files.photo[0].audio){
-            analysis.audio = {url: ' ', filename: 'Default analysis Audio'};
+        if (!req.files.audio){
+            analysis.audio = null
         } else {
-            analysis.audio = {url: req.files[0].audio.path, filename: req.files[0].audio.filename };
+            analysis.audio = {url: req.files.audio[0].path, filename: req.files.audio[0].filename };
         }
         analysis.author = req.body.userID;
         analysis.category = req.body.category;
@@ -95,7 +98,7 @@ module.exports.createAnalysis = async (req, res, next) => {
 // showing single
 module.exports.getSingle = async (req, res) => {
     try{
-        const analysis = await Analysis.findById(req.params.id).populate('category');
+        const analysis = await Analysis.findById(req.params.id).populate('category').populate('author');
         console.log(analysis)
         res.json({
             success: true,
