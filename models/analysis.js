@@ -12,7 +12,8 @@ const ImageSchema = new Schema({
 const RecordingSchema = new Schema({
     url: String,
     filename: String,
-    public_id: String
+    public_id: String,
+    originalname: String
 });
 
 ImageSchema.virtual('thumbnail').get(function () {

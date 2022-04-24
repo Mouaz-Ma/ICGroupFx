@@ -21,7 +21,7 @@ router.route('/:id')
 
 
 async function uploadFile(req, res, next) {
-    const upload = await multer({ storage }).fields([{name: 'photo', maxCount: 1}, {name: 'audio', maxCount: 1, resource_type: "video"}])
+    const upload = await multer({ storage }).fields([{name: 'photo', maxCount: 1}, {name: 'audio', maxCount: 1}])
 
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
