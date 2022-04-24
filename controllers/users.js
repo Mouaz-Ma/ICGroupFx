@@ -47,7 +47,7 @@ module.exports.register = async (req, res) => {
           subject: 'Verify new Account',
           text: 'Please click on the following link to verify your account: \n\n' +
             // add https to this and o the nuxt app home page and change the url
-            'https://icgroup.herokuapp.com/users/verify/' + uniqueString + '\n\n'
+            'http://www.icgroupsfx.com/users/verify/' + uniqueString + '\n\n'
         };
         smtpTransport.sendMail(mailOptions, function (err) {
           if (err) {
@@ -131,7 +131,7 @@ module.exports.getVerified = async (req, res) => {
       subject: 'Verify Account Request',
       text: 'Please click on the following link to verify your account: \n\n' +
         // add https to this and o the nuxt app home page and change the url
-        'https://icgroup.herokuapp.com/users/verify/' + userFound.uniqueString + '\n\n'
+        'http://www.icgroupsfx.com/users/verify/' + userFound.uniqueString + '\n\n'
     };
     smtpTransport.sendMail(mailOptions, function (err) {
       if (err) {
@@ -286,7 +286,7 @@ module.exports.requestReset = (req, res, next) => {
         // dont forget the https and the domain name for the front end 
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-          'https://icgroup.herokuapp.com/users/reset/' + token + '\n\n' +
+          'http://www.icgroupsfx.com/users/reset/' + token + '\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function (err) {
