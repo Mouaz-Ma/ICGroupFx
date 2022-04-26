@@ -62,33 +62,34 @@ module.exports.index = async (req, res) => {
 // creating a new analysis
 module.exports.createAnalysis = async (req, res, next) => {
     try{
-        // write url and file name for photo and audio and for each field of the analysis
-        // read and delete stuff as well 
-        // good night from the past to the future thanks
-
-
-    // console.log(req.files.photo[0])
-    // console.log(req.files.audio[0])
-        const analysis = new Analysis(req.body);
-        analysis.tags = req.body.tagsInput.split(',');
-        if (!req.files.photo[0]){
-            analysis.image = {url: 'https://res.cloudinary.com/mo3az/image/upload/v1648640118/ICGroup/towfiqu-barbhuiya-nApaSgkzaxg-unsplash_aiqkkn.jpg', filename: 'Default analysis Image'};
+        console.log(req.files);
+        if (req.body.category === 'null'){
+            res.json({
+                success: false,
+                message: "Please Select a Categpry!"
+              })
         } else {
-            analysis.image = {url: req.files.photo[0].path, filename: req.files.photo[0].filename };
+            const analysis = new Analysis(req.body);
+            analysis.tags = req.body.tagsInput.split(',');
+            if (!req.files.photo){
+                analysis.image = {url: 'https://res.cloudinary.com/mo3az/image/upload/v1648640118/ICGroup/towfiqu-barbhuiya-nApaSgkzaxg-unsplash_aiqkkn.jpg', filename: 'Default analysis Image'};
+            } else {
+                analysis.image = {url: req.files.photo[0].path, filename: req.files.photo[0].filename};
+            }
+            if (!req.files.audio){
+                analysis.audio = null
+            } else {
+                analysis.audio = {url: req.files.audio[0].path, filename: req.files.audio[0].filename, originalname: req.files.audio[0].originalname };
+            }
+            analysis.author = req.body.userID;
+            analysis.category = req.body.category;
+            await analysis.save();
+            res.json({
+                success: true,
+                analysis: analysis,
+                message: "Successfully made a new analysis!"
+              })
         }
-        if (!req.files.audio){
-            analysis.audio = null
-        } else {
-            analysis.audio = {url: req.files.audio[0].path, filename: req.files.audio[0].filename };
-        }
-        analysis.author = req.body.userID;
-        analysis.category = req.body.category;
-        await analysis.save();
-        res.json({
-            success: true,
-            analysis: analysis,
-            message: "Successfully made a new analysis!"
-          })
     } catch (err) {
         console.log(err);
     }
@@ -138,14 +139,14 @@ module.exports.updateSingle = async (req, res) => {
                 $set: {
                     title: req.body.title,
                     tags: req.body.tagsInput.split(','),
-                    image: {url: req.files[0].path, filename: req.files[0].filename},
+                    image: {url: req.files.photo[0].path, filename: req.files.photo[0].filename },
+                    audio: {url: req.files.audio[0].path, filename: req.files.audio[0].filename },
                     content: req.body.content,
                     category: req.body.category
                 }
             });
             await analysis.save();
-            await cloudinary.uploader.destroy(req.body.deletedImage, function(error,result) {
-                console.log(result, error) });
+            await cloudinary.uploader.destroy(req.body.deletedImage, function(error,result) {console.log(result, error) });
             res.status(200).json({
                 success: true,
                 analysis: analysis,
@@ -164,16 +165,19 @@ module.exports.updateSingle = async (req, res) => {
 // deleting single analysis
 module.exports.deleteSingle = async (req, res) => {
     try {
-        console.log(req.params.id)
         let deletedAnalysis = await Analysis.findOneAndDelete(req.params.id);
-        if (deletedAnalysis){
-            await cloudinary.uploader.destroy(deletedAnalysis.image.filename, function(error,result) {
-                console.log(result, error) });
+        if (deletedAnalysis.image.filename != 'Default analysis Image'){
+            await cloudinary.uploader.destroy(deletedAnalysis.image.filename, function(error,result) {console.log(result, error) });
+        }
+        if (deletedAnalysis.audio != null){
+            await cloudinary.uploader.destroy(deletedAnalysis.audio.filename, 
+            {invalidate: true, resource_type: "raw"}, 
+            function(error,result) {console.log(result, error) });
+        }
             res.status(200).json({
                 success: true,
                 message: "Successfully deleted Analysis!"
               })
-            }
     } catch (err) {
         console.log(err);
         res.status(500).json({
