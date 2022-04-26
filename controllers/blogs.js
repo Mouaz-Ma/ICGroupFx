@@ -86,7 +86,7 @@ module.exports.updateBlog = async (req, res, next) => {
                 }
             });
             await blog.save();
-            await cloudinary.uploader.destroy(req.body.deletedImage, function(error,result) {
+            await cloudinary.uploader.destroy(req.body.deletedImage, {invalidate: true, resource_type: "raw"}, function(error,result) {
                 console.log(result, error) });
             res.status(200).json({
                 success: true,
@@ -108,7 +108,7 @@ module.exports.deleteBlog = async (req, res, next) => {
     try {
         let deletedBlog = await Blog.findOneAndDelete({ _id: req.params.id });
         if (deletedBlog){
-            await cloudinary.uploader.destroy(deletedBlog.image.filename, function(error,result) {
+            await cloudinary.uploader.destroy(deletedBlog.image.filename, {invalidate: true, resource_type: "raw"},function(error,result) {
                 console.log(result, error) });
             console.log(deletedBlog)
             res.status(200).json({

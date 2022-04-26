@@ -86,7 +86,7 @@ module.exports.updateNew = async (req, res, next) => {
                 }
             });
             await news.save();
-            await cloudinary.uploader.destroy(req.body.deletedImage, function(error,result) {
+            await cloudinary.uploader.destroy(req.body.deletedImage, {invalidate: true, resource_type: "raw"},function(error,result) {
                 console.log(result, error) });
             res.status(200).json({
                 success: true,
@@ -108,7 +108,7 @@ module.exports.deleteNew = async (req, res, next) => {
     try {
         let deletedNew = await News.findOneAndDelete({ _id: req.params.id });
         if (deletedNew){
-            await cloudinary.uploader.destroy(deletedNew.image.filename, function(error,result) {
+            await cloudinary.uploader.destroy(deletedNew.image.filename, {invalidate: true, resource_type: "raw"},function(error,result) {
                 console.log(result, error) });
             console.log(deletedNew)
             res.status(200).json({

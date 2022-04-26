@@ -100,7 +100,6 @@ module.exports.createAnalysis = async (req, res, next) => {
 module.exports.getSingle = async (req, res) => {
     try{
         const analysis = await Analysis.findById(req.params.id).populate('category').populate('author');
-        console.log(analysis)
         res.json({
             success: true,
             analysis: analysis,
@@ -118,8 +117,7 @@ module.exports.getSingle = async (req, res) => {
 // updating single analysis
 module.exports.updateSingle = async (req, res) => {
     try {
-        console.log(req.body)
-        if(!req.files[0]){
+        if(!req.files.photo && !req.files.audio){
             let analysis = await Analysis.findOneAndUpdate({ _id: req.params.id}, {
                 $set: {
                     title: req.body.title,
@@ -134,7 +132,46 @@ module.exports.updateSingle = async (req, res) => {
                 analysis: analysis,
                 message: "Successfully updated analysis!"
               })
-        } else {
+        } else if (req.files.photo && !req.files.audio) {
+            let analysis = await Analysis.findOneAndUpdate({ _id: req.params.id}, {
+                $set: {
+                    title: req.body.title,
+                    tags: req.body.tagsInput.split(','),
+                    image: {url: req.files.photo[0].path, filename: req.files.photo[0].filename },
+                    content: req.body.content,
+                    category: req.body.category
+                }
+            });
+            await analysis.save();
+            if(req.body.deletedImage){
+                await cloudinary.uploader.destroy(req.body.deletedImage, {invalidate: true, resource_type: "raw"}, function(error,result) {console.log(console.log('image' + result, error))});
+            }
+            res.status(200).json({
+                success: true,
+                analysis: analysis,
+                message: "Successfully updated analysis!"
+              })
+        } else if (!req.files.photo && req.files.audio){
+            console.log(req.files.audio);
+            let analysis = await Analysis.findOneAndUpdate({ _id: req.params.id}, {
+                $set: {
+                    title: req.body.title,
+                    tags: req.body.tagsInput.split(','),
+                    audio: {url: req.files.audio[0].path, filename: req.files.audio[0].filename },
+                    content: req.body.content,
+                    category: req.body.category
+                }
+            });
+            await analysis.save();
+            if(req.body.deletedAudio){
+                await cloudinary.uploader.destroy(req.body.deletedAudio, {invalidate: true, resource_type: "raw"}, function(error,result) {console.log(console.log('audio' +result, error) )});
+            }
+            res.status(200).json({
+                success: true,
+                analysis: analysis,
+                message: "Successfully updated analysis!"
+              })
+        } else if ( req.files.photo && req.files.audio){
             let analysis = await Analysis.findOneAndUpdate({ _id: req.params.id}, {
                 $set: {
                     title: req.body.title,
@@ -146,7 +183,14 @@ module.exports.updateSingle = async (req, res) => {
                 }
             });
             await analysis.save();
-            await cloudinary.uploader.destroy(req.body.deletedImage, function(error,result) {console.log(result, error) });
+            if(req.body.deletedAudio && req.body.deletedImage){
+                await cloudinary.uploader.destroy(req.body.deletedImage, {invalidate: true, resource_type: "raw"}, function(error,result) {console.log('image' + result, error) });
+                await cloudinary.uploader.destroy(req.body.deletedAudio, {invalidate: true, resource_type: "raw"}, function(error,result) {console.log('audio' +  result, error) });
+            } else if(req.body.deletedAudio && !req.body.deletedImage){
+                await cloudinary.uploader.destroy(req.body.deletedAudio, {invalidate: true, resource_type: "raw"}, function(error,result) {console.log('audio' +  result, error) });
+            } else if(!req.body.deletedAudio && req.body.deletedImage){
+                await cloudinary.uploader.destroy(req.body.deletedImage, {invalidate: true, resource_type: "raw"}, function(error,result) {console.log('image' + result, error) });
+            }
             res.status(200).json({
                 success: true,
                 analysis: analysis,
@@ -167,7 +211,9 @@ module.exports.deleteSingle = async (req, res) => {
     try {
         let deletedAnalysis = await Analysis.findOneAndDelete(req.params.id);
         if (deletedAnalysis.image.filename != 'Default analysis Image'){
-            await cloudinary.uploader.destroy(deletedAnalysis.image.filename, function(error,result) {console.log(result, error) });
+            await cloudinary.uploader.destroy(deletedAnalysis.image.filename,
+            {invalidate: true, resource_type: "raw"},
+            function(error,result) {console.log(result, error) });
         }
         if (deletedAnalysis.audio != null){
             await cloudinary.uploader.destroy(deletedAnalysis.audio.filename, 
