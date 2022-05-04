@@ -42,6 +42,9 @@ const UserSchema = new Schema({
     password: {
         type: String
     },
+    telephone: {
+        type: String
+    },
     userType: {
         type: String,
         default: 'Normal User'
