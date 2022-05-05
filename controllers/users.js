@@ -34,8 +34,7 @@ module.exports.register = async (req, res) => {
           expiresIn: 604800 // 1 week
         });
         const smtpTransport = nodemailer.createTransport({
-          host: "icgroupsfx.com",
-          port: 465,
+          service: "Gmail",
           auth: {
             user: process.env.MAILUSER,
             pass: process.env.MAILPASS
@@ -118,8 +117,7 @@ module.exports.getVerified = async (req, res) => {
     console.log(req.params)
     const userFound = await User.findById(req.params.id)
     const smtpTransport = nodemailer.createTransport({
-      host: "icgroupsfx.com",
-      port: 465,
+      service: "Gmail",
       auth: {
         user: process.env.MAILUSER,
         pass: process.env.MAILPASS
@@ -276,8 +274,7 @@ module.exports.requestReset = (req, res, next) => {
     },
     function (token, user, done) {
       const smtpTransport = nodemailer.createTransport({
-        host: "icgroupsfx.com",
-        port: 465,
+        service: "Gmail",
         auth: {
           user: process.env.MAILUSER,
           pass: process.env.MAILPASS
@@ -356,8 +353,7 @@ module.exports.passResetPost = (req, res) => {
               expiresIn: 604800 // 1 week
             })
             let smtpTransport = nodemailer.createTransport({
-              host: "icgroupsfx.com",
-              port: 465,
+              service: "Gmail",
               auth: {
                 user: process.env.MAILUSER,
                 pass: process.env.MAILPASS
@@ -453,8 +449,7 @@ module.exports.contact = (req, res) => {
         initialInvestment = '100$';
     }
     const smtpTransport = nodemailer.createTransport({
-      host: "icgroupsfx.com",
-      port: 465,
+      service: "Gmail",
       auth: {
         user: process.env.MAILUSER,
         pass: process.env.MAILPASS
