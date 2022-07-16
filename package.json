@@ -8,6 +8,7 @@
   "dependencies": {
     "async": "^3.2.3",
     "bcrypt": "^5.0.1",
+    "buffer": "^6.0.3",
     "cloudinary": "^1.28.1",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^4.6.0",
@@ -26,6 +27,7 @@
     "helmet": "^4.6.0",
     "http": "^0.0.1-security",
     "http-errors": "~1.6.3",
+    "https": "^1.0.0",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "method-override": "^3.0.0",
