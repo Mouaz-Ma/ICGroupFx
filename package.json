@@ -9,6 +9,7 @@
     "async": "^3.2.3",
     "bcrypt": "^5.0.1",
     "buffer": "^6.0.3",
+    "cheerio": "^1.0.0-rc.12",
     "cloudinary": "^1.28.1",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^4.6.0",
@@ -40,6 +41,7 @@
     "passport": "^0.5.2",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^6.1.0",
+    "request": "^2.88.2",
     "sanitize-html": "^2.7.0",
     "socket.io": "^4.4.1"
   }

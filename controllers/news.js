@@ -1,5 +1,8 @@
 const News = require('../models/news');
 const { cloudinary } = require("../cloudinary");
+const newsTicker = require('../middleware');
+const request = require('request');
+const cheerio = require('cheerio');
 
 
 // get all news in the index
@@ -154,4 +157,65 @@ module.exports.showNew = async (req, res,) => {
             message: err
           })
     }
+}
+
+module.exports.tickerTape = async (req, res) => {
+    /* eslint-disable no-unused-vars */
+    /* eslint-disable max-len */
+
+
+
+    // INVESTING_URL should not include a trailing slash
+    // because some links returned by the article only
+    // provides the path instead of the full url,
+    // and the path starts with a trailing slash.
+    const INVESTING_URL = 'https://sa.investing.com'; // "https://sa.investing.com" for arabic news, default is english: "https://www.investing.com"
+
+    const NEWS_URL = '/news/';
+
+    const FOREX_NEWS_URL = 'forex-news';
+    const COMMODITIES_NEWS_URL = 'commodities-news';
+    const STOCK_MARKET_NEWS_URL = 'stock-market-news';
+    const ECONOMIC_INDICATOR_NEWS_URL = 'economic-indicators';
+    const ECONOMY_NEWS_URL = 'economy';
+    const CRYPTO_CURRENCY_NEWS_URL = 'cryptocurrency-news';
+
+    const data = [];
+    newRequest = request.defaults({
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0',
+        },
+    });
+    newRequest.get(INVESTING_URL + NEWS_URL + COMMODITIES_NEWS_URL, (error, response, html) => {
+        if (!error && response.statusCode == 200) {
+            const $ = cheerio.load(html); // loads the html document
+            // get articles inside the container
+            articles = $('.largeTitle article').each((i, el) => {
+                title = $(el).find('article div a.title').html();
+                link = $(el).find('article div a.title').attr('href');
+                // some divs have null title, this will add only valid objects
+                // to the array.
+                if (title) {
+                    // some anchors provide path to article instead
+                    // of the full url.
+                    if (link.slice(0, 4) == 'http') { // checks if link starts with http
+                        data.push({
+                            title: title,
+                            link: link
+                        });
+                    } else {
+                        data.push({
+                            title: title,
+                            link: INVESTING_URL + link
+                        });
+                    }
+                }
+            });
+            /* Storing data in database */
+            res.send(data);
+            /* ----------------------- */
+        } else {
+            console.log(error, response.statusCode, html);
+        }
+    })
 }
