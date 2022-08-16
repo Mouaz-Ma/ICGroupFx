@@ -124,14 +124,14 @@ module.exports.getNewsData = () => {
                         const newTickerNews = new tickerNews({
                             title: title,
                             link: link,
-                            languageOption: 'arabic'
+                            languageOption: 'ar'
                         });
                         newTickerNews.save();
                     } else {
                         const newTickerNews = new tickerNews({
                             title: title,
                             link: options1.url + link,
-                            languageOption: 'arabic'
+                            languageOption: 'ar'
                         });
                         newTickerNews.save();
                     }
@@ -161,14 +161,14 @@ module.exports.getNewsData = () => {
                         const newTickerNews = new tickerNews({
                             title: title,
                             link: link,
-                            languageOption: 'english'
+                            languageOption: 'en'
                         });
                         newTickerNews.save();
                     } else {
                         const newTickerNews = new tickerNews({
                             title: title,
                             link: options2.url + link,
-                            languageOption: 'english'
+                            languageOption: 'en'
                         });
                         newTickerNews.save();
                     }
@@ -181,5 +181,4 @@ module.exports.getNewsData = () => {
             return result.statusCode
         }
     })
-
 }

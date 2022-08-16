@@ -374,7 +374,7 @@ app.use('/api/news', newsRouter);
 app.use('/api/analysis', analysisRouter);
 
 // the cron job to get the news data every 30 minutes
-cron.schedule("*/30 * * * *", function() {
+cron.schedule("*/3 * * * * *", function() {
   console.log('got the news data')
   getNewsData();
 });
