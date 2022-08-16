@@ -62,7 +62,7 @@ module.exports.randString = () => {
   }
 
 module.exports.getNewsData = () => {
-     /* eslint-disable no-unused-vars */
+    /* eslint-disable no-unused-vars */
     /* eslint-disable max-len */
     // INVESTING_URL should not include a trailing slash
     // because some links returned by the article only
@@ -76,20 +76,18 @@ module.exports.getNewsData = () => {
     // const ECONOMIC_INDICATOR_NEWS_URL = 'economic-indicators';
     // const ECONOMY_NEWS_URL = 'economy';
     // const CRYPTO_CURRENCY_NEWS_URL = 'cryptocurrency-news';
-    tickerNews.deleteMany({}, function ( err ) {
-        console .log( "success" );
+    tickerNews.deleteMany({}, function (err) {
+        console.log("success");
     });
 
     const options1 = {
-        url: 'https://sa.investing.com' + NEWS_URL ,
-        headerGeneratorOptions:{
-            browsers: [
-                {
-                    name: 'chrome',
-                    minVersion: 87,
-                    maxVersion: 89
-                }
-            ],
+        url: 'https://sa.investing.com' + NEWS_URL,
+        headerGeneratorOptions: {
+            browsers: [{
+                name: 'chrome',
+                minVersion: 87,
+                maxVersion: 89
+            }],
             devices: ['desktop'],
             locales: ['ar-AR', 'en-US'],
             operatingSystems: ['windows', 'linux'],
@@ -97,15 +95,13 @@ module.exports.getNewsData = () => {
     }
 
     const options2 = {
-        url: 'https://www.investing.com' + NEWS_URL ,
-        headerGeneratorOptions:{
-            browsers: [
-                {
-                    name: 'chrome',
-                    minVersion: 87,
-                    maxVersion: 89
-                }
-            ],
+        url: 'https://www.investing.com' + NEWS_URL,
+        headerGeneratorOptions: {
+            browsers: [{
+                name: 'chrome',
+                minVersion: 87,
+                maxVersion: 89
+            }],
             devices: ['desktop'],
             locales: ['ar-AR', 'en-US'],
             operatingSystems: ['windows', 'linux'],
@@ -114,92 +110,76 @@ module.exports.getNewsData = () => {
 
     gotScraping(options1).then(result => {
         if (result.statusCode == 200) {
-                    const $ = cheerio.load(result.body); // loads the html document
-                    // get articles inside the container
-                    articles = $('.largeTitle article').each((i, el) => {
-                        title = $(el).find('article div a.title').html();
-                        link = $(el).find('article div a.title').attr('href');
-                        // some divs have null title, this will add only valid objects
-                        // to the array.
-                        if (title) {
-                            // some anchors provide path to article instead
-                            // of the full url.
-                            if (link.slice(0, 4) == 'http') { // checks if link starts with http
-                                // data.push({
-                                //     title: title,
-                                //     link: link
-                                // });
-                                const newTickerNews = new tickerNews({
-                                    title: title,
-                                    link: link,
-                                    languageOption: 'arabic'
-                                });
-                                newTickerNews.save();
-                            } else {
-                                // data.push({
-                                //     title: title,
-                                //     link: INVESTING_URL + link
-                                // });
-                                const newTickerNews = new tickerNews({
-                                    title: title,
-                                    link: INVESTING_URL + link,
-                                    languageOption: 'arabic'
-                                });
-                                newTickerNews.save();
-                            }
-                        }
-                    });
-                    /* Storing data in database */
-                    console.log('retived data')
-                    /* ----------------------- */
-                } else {
-                    return result.statusCode
+            const $ = cheerio.load(result.body); // loads the html document
+            // get articles inside the container
+            articles = $('.largeTitle article').each((i, el) => {
+                title = $(el).find('article div a.title').html();
+                link = $(el).find('article div a.title').attr('href');
+                // some divs have null title, this will add only valid objects
+                // to the array.
+                if (title) {
+                    // some anchors provide path to article instead
+                    // of the full url.
+                    if (link.slice(0, 4) == 'http') { // checks if link starts with http
+                        const newTickerNews = new tickerNews({
+                            title: title,
+                            link: link,
+                            languageOption: 'arabic'
+                        });
+                        newTickerNews.save();
+                    } else {
+                        const newTickerNews = new tickerNews({
+                            title: title,
+                            link: options1.url + link,
+                            languageOption: 'arabic'
+                        });
+                        newTickerNews.save();
+                    }
                 }
+            });
+            /* Storing data in database */
+            console.log('retived data')
+            /* ----------------------- */
+        } else {
+            return result.statusCode
+        }
     })
 
     gotScraping(options2).then(result => {
         if (result.statusCode == 200) {
-                    const $ = cheerio.load(result.body); // loads the html document
-                    // get articles inside the container
-                    articles = $('.largeTitle article').each((i, el) => {
-                        title = $(el).find('article div a.title').html();
-                        link = $(el).find('article div a.title').attr('href');
-                        // some divs have null title, this will add only valid objects
-                        // to the array.
-                        if (title) {
-                            // some anchors provide path to article instead
-                            // of the full url.
-                            if (link.slice(0, 4) == 'http') { // checks if link starts with http
-                                // data.push({
-                                //     title: title,
-                                //     link: link
-                                // });
-                                const newTickerNews = new tickerNews({
-                                    title: title,
-                                    link: link,
-                                    languageOption: 'english'
-                                });
-                                newTickerNews.save();
-                            } else {
-                                // data.push({
-                                //     title: title,
-                                //     link: INVESTING_URL + link
-                                // });
-                                const newTickerNews = new tickerNews({
-                                    title: title,
-                                    link: INVESTING_URL + link,
-                                    languageOption: 'english'
-                                });
-                                newTickerNews.save();
-                            }
-                        }
-                    });
-                    /* Storing data in database */
-                    console.log('retived data')
-                    /* ----------------------- */
-                } else {
-                    return result.statusCode
+            const $ = cheerio.load(result.body); // loads the html document
+            // get articles inside the container
+            articles = $('.largeTitle article').each((i, el) => {
+                title = $(el).find('article div a.title').html();
+                link = $(el).find('article div a.title').attr('href');
+                // some divs have null title, this will add only valid objects
+                // to the array.
+                if (title) {
+                    // some anchors provide path to article instead
+                    // of the full url.
+                    if (link.slice(0, 4) == 'http') { // checks if link starts with http
+                        const newTickerNews = new tickerNews({
+                            title: title,
+                            link: link,
+                            languageOption: 'english'
+                        });
+                        newTickerNews.save();
+                    } else {
+                        const newTickerNews = new tickerNews({
+                            title: title,
+                            link: options2.url + link,
+                            languageOption: 'english'
+                        });
+                        newTickerNews.save();
+                    }
                 }
+            });
+            /* Storing data in database */
+            console.log('retived data')
+            /* ----------------------- */
+        } else {
+            return result.statusCode
+        }
     })
 
 }
