@@ -25,8 +25,10 @@ const createError = require('http-errors'),
              cors = require('cors'),
             https = require('https'),
            crypto = require('crypto'),
-           buffer = require('buffer')
+           buffer = require('buffer'),
+             cron = require('node-cron');
 
+const { getNewsData } = require('./middleware');
 // ssl certificate options 
 var ssl_options = {
   key: fs.readFileSync('./ssl/key.pem'),
@@ -370,6 +372,11 @@ app.use('/api/users', usersRouter);
 app.use('/api/blogs', blogsRouter);
 app.use('/api/news', newsRouter);
 app.use('/api/analysis', analysisRouter);
+
+// the cron job to get the news data every 30 minutes
+cron.schedule("*/30 * * * *", function() {
+  getNewsData();
+});
 
   //  web sockets
   io.on("connect", function(socket) {
