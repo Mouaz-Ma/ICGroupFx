@@ -160,7 +160,7 @@ module.exports.showNew = async (req, res,) => {
 
 module.exports.tickerTape = async (req, res) => {
     try{
-        const tickers = await tickerNews.find({languageOption: req.body.languageOption});
+        const tickers = await tickerNews.find({languageOption: req.query.languageOption});
         res.json({
             success: true,
             tickerNews: tickers,

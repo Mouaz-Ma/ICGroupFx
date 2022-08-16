@@ -69,7 +69,7 @@ module.exports.getNewsData = () => {
     // provides the path instead of the full url,
     // and the path starts with a trailing slash.
     // const INVESTING_URL = 'https://sa.investing.com'; // "https://sa.investing.com" for arabic news, default is english: "https://www.investing.com"
-    const NEWS_URL = '/news/';
+    const NEWS_URL = '/news/economy';
     // const FOREX_NEWS_URL = 'forex-news';
     // const COMMODITIES_NEWS_URL = 'commodities-news';
     // const STOCK_MARKET_NEWS_URL = 'stock-market-news';
