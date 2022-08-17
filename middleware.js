@@ -167,7 +167,7 @@ module.exports.getNewsData = () => {
                     } else {
                         const newTickerNews = new tickerNews({
                             title: title,
-                            link: 'https://sa.investing.com' + link,
+                            link: 'https://www.investing.com' + link,
                             languageOption: 'en'
                         });
                         newTickerNews.save();
