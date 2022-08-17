@@ -130,7 +130,7 @@ module.exports.getNewsData = () => {
                     } else {
                         const newTickerNews = new tickerNews({
                             title: title,
-                            link: options1.url + link,
+                            link: 'https://sa.investing.com' + link,
                             languageOption: 'ar'
                         });
                         newTickerNews.save();
@@ -167,7 +167,7 @@ module.exports.getNewsData = () => {
                     } else {
                         const newTickerNews = new tickerNews({
                             title: title,
-                            link: options2.url + link,
+                            link: 'https://sa.investing.com' + link,
                             languageOption: 'en'
                         });
                         newTickerNews.save();
