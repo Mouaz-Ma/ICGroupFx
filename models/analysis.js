@@ -43,7 +43,7 @@ AnalysisSchema.virtual('properties.popUpMarkup').get(function () {
 
 
 
-AnalysisSchema.post('findOneAndDelete', async function (doc) {
+AnalysisSchema.post('findByIdAndDelete', async function (doc) {
     if (doc) {
         await Review.deleteMany({
             _id: {

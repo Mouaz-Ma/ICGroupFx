@@ -106,7 +106,7 @@ module.exports.updateBlog = async (req, res, next) => {
 // deleting one blog
 module.exports.deleteBlog = async (req, res, next) => {
     try {
-        let deletedBlog = await Blog.findOneAndDelete({ _id: req.params.id });
+        let deletedBlog = await Blog.findByIdAndDelete({ _id: req.params.id });
         if (deletedBlog){
             await cloudinary.uploader.destroy(deletedBlog.image.filename, {invalidate: true, resource_type: "raw"},function(error,result) {
                 console.log(result, error) });

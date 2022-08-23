@@ -108,7 +108,7 @@ module.exports.updateNew = async (req, res, next) => {
 // deleting one news
 module.exports.deleteNew = async (req, res, next) => {
     try {
-        let deletedNew = await News.findOneAndDelete({ _id: req.params.id });
+        let deletedNew = await News.findByIdAndDelete({ _id: req.params.id });
         if (deletedNew){
             await cloudinary.uploader.destroy(deletedNew.image.filename, {invalidate: true, resource_type: "raw"},function(error,result) {
                 console.log(result, error) });

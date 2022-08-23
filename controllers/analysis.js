@@ -209,7 +209,7 @@ module.exports.updateSingle = async (req, res) => {
 // deleting single analysis
 module.exports.deleteSingle = async (req, res) => {
     try {
-        let deletedAnalysis = await Analysis.findOneAndDelete(req.params.id);
+        let deletedAnalysis = await Analysis.findByIdAndDelete(req.params.id);
         if (deletedAnalysis.image.filename != 'Default analysis Image'){
             await cloudinary.uploader.destroy(deletedAnalysis.image.filename,
             {invalidate: true, resource_type: "raw"},

@@ -44,7 +44,7 @@ BlogSchema.virtual('properties.popUpMarkup').get(function () {
 
 
 
-BlogSchema.post('findOneAndDelete', async function (doc) {
+BlogSchema.post('findByIdAndDelete', async function (doc) {
     if (doc) {
         await Review.deleteMany({
             _id: {

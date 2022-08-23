@@ -43,7 +43,7 @@ NewsSchema.virtual('properties.popUpMarkup').get(function () {
 
 
 
-NewsSchema.post('findOneAndDelete', async function (doc) {
+NewsSchema.post('findByIdAndDelete', async function (doc) {
     if (doc) {
         await Review.deleteMany({
             _id: {
