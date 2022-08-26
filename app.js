@@ -409,8 +409,8 @@ module.exports = app;
 
 // Setting up the port for listening requests
 const port = process.env.PORT || 5000;
-// app.listen(port, () => console.log("Server at 5000"));
-const server = https.createServer(ssl_options, app)
-    .listen(port, () => {
-        console.log('server running at ' + port)
-    })
+app.listen(port, () => console.log("Server at 5000"));
+// const server = https.createServer(ssl_options, app)
+//     .listen(port, () => {
+//         console.log('server running at ' + port)
+//     })
