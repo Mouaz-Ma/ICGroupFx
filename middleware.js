@@ -12,7 +12,7 @@ const cheerio = require('cheerio');
 
 module.exports.isAdministrator = async (req, res, next) => {
     // const { id } = req.params.user.id;
-    console.log(req.params)
+    // console.log(req.params)
     // const user = await User.findById(id);
     // if (user.userType != "Administrator") {
     //     // req.flash('error', 'You do not have permission to do that!');
@@ -62,123 +62,72 @@ module.exports.randString = () => {
   }
 
 module.exports.getNewsData = () => {
-    /* eslint-disable no-unused-vars */
-    /* eslint-disable max-len */
-    // INVESTING_URL should not include a trailing slash
-    // because some links returned by the article only
-    // provides the path instead of the full url,
-    // and the path starts with a trailing slash.
-    // const INVESTING_URL = 'https://sa.investing.com'; // "https://sa.investing.com" for arabic news, default is english: "https://www.investing.com"
-    const NEWS_URL = '/news/economy';
-    // const FOREX_NEWS_URL = 'forex-news';
-    // const COMMODITIES_NEWS_URL = 'commodities-news';
-    // const STOCK_MARKET_NEWS_URL = 'stock-market-news';
-    // const ECONOMIC_INDICATOR_NEWS_URL = 'economic-indicators';
-    // const ECONOMY_NEWS_URL = 'economy';
-    // const CRYPTO_CURRENCY_NEWS_URL = 'cryptocurrency-news';
     tickerNews.deleteMany({}, function (err) {
-        console.log("success");
+        console.log("refreshed news");
     });
-
-    const options1 = {
-        url: 'https://sa.investing.com' + NEWS_URL,
-        headerGeneratorOptions: {
-            browsers: [{
-                name: 'chrome',
-                minVersion: 87,
-                maxVersion: 89
-            }],
-            devices: ['desktop'],
-            locales: ['ar-AR', 'en-US'],
-            operatingSystems: ['windows', 'linux'],
-        }
-    }
-
-    const options2 = {
-        url: 'https://www.investing.com' + NEWS_URL,
-        headerGeneratorOptions: {
-            browsers: [{
-                name: 'chrome',
-                minVersion: 87,
-                maxVersion: 89
-            }],
-            devices: ['desktop'],
-            locales: ['ar-AR', 'en-US'],
-            operatingSystems: ['windows', 'linux'],
-        }
-    }
-
-    gotScraping(options1).then(result => {
+    // english news
+    gotScraping.get('https://www.tradingview.com/news/?market=economic').then((result) => {
         if (result.statusCode == 200) {
-            const $ = cheerio.load(result.body); // loads the html document
-            // get articles inside the container
-            articles = $('.largeTitle article').each((i, el) => {
-                title = $(el).find('article div a.title').html();
-                link = $(el).find('article div a.title').attr('href');
-                // some divs have null title, this will add only valid objects
-                // to the array.
-                if (title) {
-                    // some anchors provide path to article instead
-                    // of the full url.
-                    if (link.slice(0, 4) == 'http') { // checks if link starts with http
-                        const newTickerNews = new tickerNews({
-                            title: title,
-                            link: link,
-                            languageOption: 'ar'
-                        });
-                        newTickerNews.save();
-                    } else {
-                        const newTickerNews = new tickerNews({
-                            title: title,
-                            link: 'https://sa.investing.com' + link,
-                            languageOption: 'ar'
-                        });
-                        newTickerNews.save();
-                    }
+            const $ = cheerio.load(result.body);
+            const data = [];
+            articles = $('.cardLink-BohupzCl').each(function(i, el) { // 'a[href*="/stocks/saudi-arabia-news/"]'
+              title = $(el).find('.title-O1eazALv').html();
+                link = $(el).attr('href');
+              if (title && link) {
+                if (link.slice(0, 4) == 'http') { // checks if link starts with http
+                  const newTickerNews = new tickerNews({
+                      title: title,
+                      link: link,
+                      languageOption: 'en'
+                  });
+                  newTickerNews.save();
+                } else {
+                  const newTickerNews = new tickerNews({
+                      title: title,
+                      link: 'https://www.tradingview.com' + link,
+                      languageOption: 'en'
+                  });
+                  newTickerNews.save();
                 }
+              }
             });
-            /* Storing data in database */
+            // /* Storing data in database */
             console.log('retived data')
             /* ----------------------- */
-        } else {
-            return result.statusCode
-        }
-    })
-
-    gotScraping(options2).then(result => {
+          } else {
+            console.log(result.statusCode);
+          }
+        });
+    // arabic news
+    gotScraping.get('https://ar.tradingview.com/news/').then((result) => {
         if (result.statusCode == 200) {
-            const $ = cheerio.load(result.body); // loads the html document
-            // get articles inside the container
-            articles = $('.largeTitle article').each((i, el) => {
-                title = $(el).find('article div a.title').html();
-                link = $(el).find('article div a.title').attr('href');
-                // some divs have null title, this will add only valid objects
-                // to the array.
-                if (title) {
-                    // some anchors provide path to article instead
-                    // of the full url.
-                    if (link.slice(0, 4) == 'http') { // checks if link starts with http
-                        const newTickerNews = new tickerNews({
-                            title: title,
-                            link: link,
-                            languageOption: 'en'
-                        });
-                        newTickerNews.save();
-                    } else {
-                        const newTickerNews = new tickerNews({
-                            title: title,
-                            link: 'https://www.investing.com' + link,
-                            languageOption: 'en'
-                        });
-                        newTickerNews.save();
-                    }
+          const $ = cheerio.load(result.body);
+          const data = [];
+          articles = $('.cardLink-BohupzCl').each(function(i, el) { // 'a[href*="/stocks/saudi-arabia-news/"]'
+            title = $(el).find('.title-O1eazALv').html();
+              link = $(el).attr('href');
+            if (title && link) {
+                if (link.slice(0, 4) == 'http') { // checks if link starts with http
+                  const newTickerNews = new tickerNews({
+                      title: title,
+                      link: link,
+                      languageOption: 'ar'
+                  });
+                  newTickerNews.save();
+                } else {
+                  const newTickerNews = new tickerNews({
+                      title: title,
+                      languageOption: 'ar'
+                  });
+                  newTickerNews.save();
                 }
-            });
-            /* Storing data in database */
-            console.log('retived data')
-            /* ----------------------- */
+              }
+          });
+          // /* Storing data in database */
+          console.log(data);
+          /* ----------------------- */
         } else {
-            return result.statusCode
+          console.log(result.statusCode);
         }
-    })
+      });
 }
