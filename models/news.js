@@ -17,6 +17,7 @@ ImageSchema.virtual('thumbnail').get(function () {
 const opts = { toJSON: { virtuals: true } };
 
 const NewsSchema = new Schema({
+    language: { type: String, default: 'ar' },
     title: String,
     image: ImageSchema,
     tags: [{type: String}],
