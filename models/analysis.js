@@ -22,6 +22,7 @@ ImageSchema.virtual('thumbnail').get(function () {
 const opts = { toJSON: { virtuals: true } };
 
 const AnalysisSchema = new Schema({
+    language: { type: String, default: 'ar' },
     title: String,
     image: ImageSchema,
     audio: RecordingSchema,
