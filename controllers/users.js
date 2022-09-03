@@ -461,6 +461,32 @@ module.exports.contact = (req, res) => {
       subject: 'new inquiry from ' + req.body.name,
       text: 'telphone number: ' + req.body.phone + ' \n' + 'email: ' + req.body.email + ' \n' + 'Trading Type: ' + req.body.tradingType + ' \n' + 'Initial Investment:' + initialInvestment + ' \n' + req.body.description + ' \n'
     };
+    
+    if(req.body.email){
+      let mailOptionsToCustomer = null;
+      if (req.body.language === 'ar'){
+        mailOptionsToCustomer = {
+          to: req.body.email,
+          from: process.env.MAILUSER,
+          subject: 'ICGroup شكرا لتواصلك مع',
+          html: '<img src="https://www.icgroupsfx.com/_nuxt/img/1.e43f27b.jpg" alt="Girl in a jacket" width="400" height="300"><h3 dir="rtl">.سيتم التواصل مع حضرتكم من قبل احد اعضاء فريقنا باقرب وقت ممكن' + ' \n' + ' لمزيد من المعلومات يمكنك تصفح موقعنا او التواصل معنا عن طريق رقم الواتساب الموجود على صفحة التواصل</h3>'
+        };
+      } else if (req.body.language === 'en'){
+        mailOptionsToCustomer = {
+          to: req.body.email,
+          from: process.env.MAILUSER,
+          subject: 'Thank you for contacting ICGroup',
+          html: '<img src="https://www.icgroupsfx.com/_nuxt/img/1.e43f27b.jpg" alt="Girl in a jacket" width="400" height="300"><h3>You will be contacted by one of our team member ASAP. For more information you can browse our Website or contacting us though the whatsapp number from our contact page.</h3>'
+        };
+      }
+      smtpTransport.sendMail(mailOptionsToCustomer, function (err) {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log("email sent to client")
+        }
+      });
+    }
     smtpTransport.sendMail(mailOptions, function (err) {
       if (err) {
         console.log(err)
