@@ -61,18 +61,17 @@ module.exports.randString = () => {
     return randStr
   }
 
-module.exports.getNewsData = () => {
+module.exports.getNewsData = async () => {
     tickerNews.deleteMany({}, function (err) {
-        console.log("refreshed news");
+        console.log("Deleted old ticker news in DB");
     });
-    // english news
-    gotScraping.get('https://www.tradingview.com/news/?market=economic').then((result) => {
+    // // english news
+    await gotScraping.get('https://www.tradingview.com/news/?market=economic').then((result) => {
         if (result.statusCode == 200) {
             const $ = cheerio.load(result.body);
-            const data = [];
-            articles = $('.cardLink-BohupzCl').each(function(i, el) { // 'a[href*="/stocks/saudi-arabia-news/"]'
-              title = $(el).find('.title-O1eazALv').html();
-                link = $(el).attr('href');
+            articles = $('.cardLink-gaCYEutU').each(function(i, el) { // 'a[href*="/stocks/saudi-arabia-news/"]'
+              title = $(el).find('.title-C9RvkKmg').html();
+              link = $(el).attr('href');
               if (title && link) {
                 if (link.slice(0, 4) == 'http') { // checks if link starts with http
                   const newTickerNews = new tickerNews({
@@ -80,6 +79,7 @@ module.exports.getNewsData = () => {
                       link: link,
                       languageOption: 'en'
                   });
+                  // /* Storing data in database */
                   newTickerNews.save();
                 } else {
                   const newTickerNews = new tickerNews({
@@ -87,24 +87,23 @@ module.exports.getNewsData = () => {
                       link: 'https://www.tradingview.com' + link,
                       languageOption: 'en'
                   });
+                  // /* Storing data in database */
                   newTickerNews.save();
                 }
               }
             });
-            // /* Storing data in database */
-            console.log('retived data')
+            console.log('English Ticker News stored in DB')
             /* ----------------------- */
           } else {
             console.log(result.statusCode);
           }
         });
-    // arabic news
-    gotScraping.get('https://ar.tradingview.com/news/').then((result) => {
+    // // arabic news
+    await gotScraping.get('https://ar.tradingview.com/news/').then((result) => {
         if (result.statusCode == 200) {
           const $ = cheerio.load(result.body);
-          const data = [];
-          articles = $('.cardLink-BohupzCl').each(function(i, el) { // 'a[href*="/stocks/saudi-arabia-news/"]'
-            title = $(el).find('.title-O1eazALv').html();
+          articles = $('.cardLink-gaCYEutU').each(function(i, el) { // 'a[href*="/stocks/saudi-arabia-news/"]'
+            title = $(el).find('.title-C9RvkKmg').html();
               link = $(el).attr('href');
             if (title && link) {
                 if (link.slice(0, 4) == 'http') { // checks if link starts with http
@@ -113,18 +112,19 @@ module.exports.getNewsData = () => {
                       link: link,
                       languageOption: 'ar'
                   });
+                  // /* Storing data in database */
                   newTickerNews.save();
                 } else {
                   const newTickerNews = new tickerNews({
                       title: title,
                       languageOption: 'ar'
-                  });
+                  });          
+                  // /* Storing data in database */
                   newTickerNews.save();
                 }
               }
           });
-          // /* Storing data in database */
-          console.log(data);
+          console.log('Arabic Ticker News stored in DB')
           /* ----------------------- */
         } else {
           console.log(result.statusCode);

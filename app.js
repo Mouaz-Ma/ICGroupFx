@@ -17,7 +17,6 @@ const createError = require('http-errors'),
          passport = require('passport'),
     localStrategy = require('passport-local').Strategy,
          mongoose = require('mongoose'),
-          ejsMate = require('ejs-mate'),
     mongoSanitize = require('express-mongo-sanitize'),
            logger = require('morgan'),
               jwt = require('jsonwebtoken'),
@@ -266,9 +265,9 @@ db.once("open", () => {
 const app = express();
 
 // view engine setup
-app.engine('ejs', ejsMate)
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'))
+// app.engine('ejs', ejsMate)
+// app.set('view engine', 'ejs');
+// app.set('views', path.join(__dirname, 'views'))
 
 app.use(cors());
 app.use(logger('dev'));
@@ -374,8 +373,7 @@ app.use('/api/news', newsRouter);
 app.use('/api/analysis', analysisRouter);
 
 // the cron job to get the news data every 30 minutes
-cron.schedule("*/30  * * * *", function() {
-  console.log('got the news data')
+cron.schedule("*/3 * * * * *", function() {
   getNewsData();
 });
 
