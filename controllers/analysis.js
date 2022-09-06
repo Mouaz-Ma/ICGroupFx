@@ -44,7 +44,9 @@ module.exports.createNewCategory = async (req, res) => {
 // get all analysis in the index with a specific category
 module.exports.index = async (req, res) => {
     try{
-        const analysis = await Analysis.find({'category' : req.params.id}).populate('category');
+        const perPage = 5;
+        const page = req.query.page;
+        const analysis = await Analysis.find({'category' : req.params.id}).limit(perPage).skip(perPage * (page-1)).populate('category');
         res.json({
             success: true,
             analysis: analysis,
