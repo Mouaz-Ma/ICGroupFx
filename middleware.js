@@ -22,6 +22,7 @@ module.exports.isAdministrator = async (req, res, next) => {
     next();
 }
 
+// Verification for Token
 module.exports.verifyToken = async (req, res, next) => {
     let token = req.headers['x-access-token'] || req.headers['authorization'];
     let checkBearer = "Bearer "
@@ -49,6 +50,7 @@ module.exports.verifyToken = async (req, res, next) => {
     }
 }
 
+// creating random String for auth and reset pass
 module.exports.randString = () => {
     // 8 length string
     const len = 8
@@ -59,8 +61,9 @@ module.exports.randString = () => {
         randStr += ch
     }
     return randStr
-  }
+}
 
+// scraping news
 module.exports.getNewsData = async () => {
     tickerNews.deleteMany({}, function (err) {
         console.log("Deleted old ticker news in DB");
