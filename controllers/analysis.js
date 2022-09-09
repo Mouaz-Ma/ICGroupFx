@@ -44,12 +44,15 @@ module.exports.createNewCategory = async (req, res) => {
 // get all analysis in the index with a specific category
 module.exports.index = async (req, res) => {
     try{
-        const perPage = 5;
+        const perPage = 6;
         const page = req.query.page;
-        const analysis = await Analysis.find({'category' : req.params.id}).limit(perPage).skip(perPage * (page-1)).populate('category');
+        const numberOfanalysis = await Analysis.count({'category' : req.params.id, 'language': req.query.language});
+        const numberOfPages = Math.ceil(numberOfanalysis/6);
+        const analysis = await Analysis.find({'category' : req.params.id, 'language': req.query.language}).sort({createdAt: -1 }).limit(perPage).skip(perPage * (page-1)).populate('category');
         res.json({
             success: true,
             analysis: analysis,
+            numberOfPages : numberOfPages,
             message: "analysis retrieved succesfully!"
           })
     } catch (err){
