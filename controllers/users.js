@@ -427,6 +427,25 @@ module.exports.logout = (req, res) => {
   })
 }
 
+// search
+module.exports.searchUser = async (req, res) => {
+  try {
+    const q = req.query.q;
+    const usersFound = await User.find({username: {$regex: new RegExp(q), $options: 'i'}})
+    res.json({
+      success: true,
+      usersFound: usersFound,
+      message: 'found Users'
+    })
+  } catch (err){
+    console.log(err)
+    res.json({
+      success: false,
+      message: err,
+    });
+  }
+}
+
 
 // user profile
 module.exports.user = async (req, res) => {

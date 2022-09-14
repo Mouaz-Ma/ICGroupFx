@@ -41,6 +41,9 @@ router.route('/updateUser/:id')
 
 router.post('/logout', users.logout)
 
+// search Users
+router.route('/search').get(users.searchUser)
+
 // contact form
 router.post('/contact', users.contact)
 
