@@ -229,12 +229,35 @@ module.exports.updateUser = async (req, res) => {
       if (req.body.password) foundUser.password = req.body.password;
       if (req.body.telephone) foundUser.telephone = req.body.telephone;
       
-
-
       await foundUser.save();
       res.json({
         success: true,
         message: "Successfully updated"
+      })
+    }
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
+
+
+// updating user profile by Admin
+module.exports.updateUserInfo = async (req, res) => {
+  try {
+    let foundUser = await User.findOne({
+      _id: req.params.id
+    })
+    if (foundUser) {
+      if (req.body.username) foundUser.username = req.body.username;
+      if (req.body.email) foundUser.email = req.body.email;
+      if (req.body.password) foundUser.password = req.body.password;
+      if (req.body.telephone) foundUser.telephone = req.body.telephone;
+      await foundUser.save();
+      res.json({
+        success: true,
+        updatedUser : foundUser,
+        message: "Successfully updated",
       })
     }
   } catch (err) {

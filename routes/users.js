@@ -36,6 +36,9 @@ router.route('/passReset/:token')
 router.route('/updateUser')
 .put(verifyToken ,users.updateUser)
 
+router.route('/updateUser/:id')
+.put(verifyToken, users.updateUserInfo)
+
 router.post('/logout', users.logout)
 
 // contact form
