@@ -25,6 +25,8 @@ const createError = require('http-errors'),
             https = require('https'),
            crypto = require('crypto'),
            buffer = require('buffer'),
+           ejs = require('ejs'),
+           ejsMate = require('ejs-mate')
              cron = require('node-cron');
 
 const { getNewsData } = require('./middleware');
@@ -74,9 +76,9 @@ db.once("open", () => {
 const app = express();
 
 // view engine setup
-// app.engine('ejs', ejsMate)
-// app.set('view engine', 'ejs');
-// app.set('views', path.join(__dirname, 'views'))
+app.engine('ejs', ejsMate)
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'))
 
 app.use(cors());
 app.use(logger('dev'));

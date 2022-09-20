@@ -241,6 +241,27 @@ module.exports.updateUser = async (req, res) => {
   }
 }
 
+//uploading user avatar
+module.exports.uploadAvatar = async (req, res) => {
+  try {
+    let foundUser = await User.findOne({
+      _id: req.decoded._id
+    })
+    if (foundUser) {
+      foundUser.image = {url: req.files[0].path, filename: req.files[0].filename };
+      await foundUser.save();
+      res.json({
+        success: true,
+        foundUser: foundUser,
+        message: "Successfully uploaded profile avatar!"
+      })
+    }
+  } catch (err){
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
+
 
 // updating user profile by Admin
 module.exports.updateUserInfo = async (req, res) => {

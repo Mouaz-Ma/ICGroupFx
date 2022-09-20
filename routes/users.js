@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
-// const User = require('../models/user');
+const multer = require('multer');
+const { storage } = require('../cloudinary');
+const upload = multer({ storage });
 const users = require('../controllers/users');
 const { isLoggedIn, isAuthor, validateAnalysis, verifyToken } = require('../middleware');
 
@@ -35,6 +37,10 @@ router.route('/passReset/:token')
 
 router.route('/updateUser')
 .put(verifyToken ,users.updateUser)
+
+// profile pic
+router.route('/uploadAvatar')
+.put(upload.array('avatar'), verifyToken ,users.uploadAvatar)
 
 router.route('/updateUser/:id')
 .put(verifyToken, users.updateUserInfo)
