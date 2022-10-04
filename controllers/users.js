@@ -78,6 +78,7 @@ module.exports.register = async (req, res) => {
 // registerSocial end point
 module.exports.registerSocial = async (req, res) => {
   try {
+    console.log(req.body.email)
     if (!req.body.email || await User.findOne({
         email: req.body.email
       })) {
