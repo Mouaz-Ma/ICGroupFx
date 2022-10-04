@@ -116,6 +116,7 @@ module.exports.getNewsData = async () => {
                       languageOption: 'ar'
                   });
                   // /* Storing data in database */
+                  console.log(newTickerNews)
                   newTickerNews.save();
                 } else {
                   const newTickerNews = new tickerNews({
@@ -123,9 +124,18 @@ module.exports.getNewsData = async () => {
                       languageOption: 'ar'
                   });          
                   // /* Storing data in database */
+                  console.log(newTickerNews)
                   newTickerNews.save();
                 }
-              }
+              } else if (title) {
+                  const newTickerNews = new tickerNews({
+                      title: title,
+                      languageOption: 'ar'
+                  });
+                  // /* Storing data in database */
+                  console.log(newTickerNews)
+                  newTickerNews.save();         
+                }
           });
           console.log('Arabic Ticker News stored in DB')
           /* ----------------------- */
